@@ -1,0 +1,7 @@
+@use '../../../../../styles/variables' as v;
+.task-row { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: start; padding: 1.1rem 0; border-bottom: 1px solid v.$color-border; }
+.task-row:last-child { border-bottom: 0; }.check { display: grid; place-items: center; width: 1.35rem; height: 1.35rem; margin-top: .1rem; border: 1.5px solid #cbd5e1; border-radius: .4rem; color: #fff; background: #fff; cursor: pointer; }.check.checked { border-color: v.$color-success; background: v.$color-success; }
+.task-title { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }.task-copy p { margin: .35rem 0 .6rem; color: v.$color-muted; font-size: .88rem; }.meta { display: flex; flex-wrap: wrap; gap: 1rem; color: v.$color-muted; font-size: .75rem; }
+.priority { padding: .18rem .45rem; border-radius: 999px; font-size: .65rem; font-weight: 750; text-transform: capitalize; }.priority--low { color: #047857; background: #ecfdf5; }.priority--medium { color: #a16207; background: #fefce8; }.priority--high { color: #b91c1c; background: #fef2f2; }
+.row-actions { display: flex; gap: .25rem; }.row-actions button { padding: .4rem; border: 0; color: v.$color-primary; background: transparent; font-size: .78rem; cursor: pointer; }.row-actions .remove { color: v.$color-danger; }
+@media (max-width: v.$breakpoint-mobile) { .task-row { grid-template-columns: auto 1fr; }.row-actions { grid-column: 2; } }

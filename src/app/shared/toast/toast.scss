@@ -1,6 +1,0 @@
-@use '../../../styles/variables' as v;
-.toast { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 120; display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: .75rem; width: min(calc(100% - 2.5rem), 24rem); padding: 1rem; border: 1px solid v.$color-border; border-radius: v.$radius-lg; background: #fff; box-shadow: v.$shadow-lg; }
-.toast-icon { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; color: #fff; background: v.$color-primary; font-size: .78rem; font-weight: 800; }
-.toast--success .toast-icon { background: v.$color-success; } .toast--error .toast-icon { background: v.$color-danger; }
-strong { font-size: .9rem; } p { margin: .25rem 0 0; color: v.$color-muted; font-size: .82rem; }
-button { border: 0; color: v.$color-muted; background: transparent; font-size: 1.25rem; cursor: pointer; }

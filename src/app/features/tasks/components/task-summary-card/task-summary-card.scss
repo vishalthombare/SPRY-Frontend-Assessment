@@ -1,0 +1,4 @@
+@use '../../../../../styles/variables' as v;
+.summary-card { display: flex; align-items: center; gap: 1rem; padding: 1.2rem; border: 1px solid v.$color-border; border-radius: v.$radius-lg; background: #fff; }
+.summary-icon { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: .85rem; color: v.$color-primary; background: #eff6ff; }.summary-icon--amber { color: #b45309; background: #fffbeb; }.summary-icon--green { color: v.$color-success; background: #f0fdf4; }
+.summary-card div { display: grid; }.label { color: v.$color-muted; font-size: .76rem; }.summary-card strong { margin: .12rem 0; font-size: 1.45rem; }.summary-card small { color: v.$color-muted; }

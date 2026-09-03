@@ -1,0 +1,4 @@
+@use '../../../../styles/variables' as v;
+.dialog-header { display: flex; align-items: center; gap: .75rem; }
+.dialog-icon { display: grid; place-items: center; flex: 0 0 2rem; height: 2rem; border-radius: 50%; color: v.$color-danger; background: #fef2f2; font-weight: 800; }
+.dialog-body p { margin: 0; line-height: 1.6; }

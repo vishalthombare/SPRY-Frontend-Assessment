@@ -1,4 +1,0 @@
-@use '../../../styles/variables' as v;
-.empty-state { display: grid; justify-items: center; padding: clamp(2.5rem, 8vw, 5rem) 1rem; border: 1px dashed v.$color-border; border-radius: v.$radius-lg; text-align: center; background: #fff; }
-.empty-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: 1rem; color: v.$color-primary; background: #eff6ff; font-size: 1.25rem; }
-h2 { margin: 1rem 0 .35rem; font-size: 1.1rem; } p { max-width: 28rem; margin: 0 0 1.25rem; color: v.$color-muted; }

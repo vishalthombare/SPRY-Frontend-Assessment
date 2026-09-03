@@ -2,15 +2,14 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
-  { path: 'login', loadComponent: () => import('./pages/login/login').then((m) => m.Login), title: 'Sign in | SPRY' },
+  { path: 'login', loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES) },
   {
     path: '', canActivate: [authGuard],
     loadComponent: () => import('./layout/app-layout').then((m) => m.AppLayout),
     children: [
-      { path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard), title: 'Dashboard | SPRY' },
-      { path: 'assignment', loadComponent: () => import('./pages/assignment/assignment').then((m) => m.Assignment), title: 'Assignment | SPRY' },
-      { path: 'tasks', loadComponent: () => import('./pages/tasks/tasks').then((m) => m.Tasks), title: 'Tasks | SPRY' },
-      { path: 'tasks/completed', loadComponent: () => import('./pages/tasks/completed-tasks').then((m) => m.CompletedTasks), title: 'Completed tasks | SPRY' },
+      { path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES) },
+      { path: 'assignment', loadChildren: () => import('./features/assignments/assignments.routes').then((m) => m.ASSIGNMENT_ROUTES) },
+      { path: 'tasks', loadChildren: () => import('./features/tasks/tasks.routes').then((m) => m.TASK_ROUTES) },
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
     ],
   },
