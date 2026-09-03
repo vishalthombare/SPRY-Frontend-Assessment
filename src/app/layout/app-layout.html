@@ -1,0 +1,23 @@
+<div class="app-shell" [class.menu-open]="menuOpen()">
+  <button class="sidebar-backdrop" aria-label="Close navigation" (click)="closeMenu()"></button>
+  <aside class="sidebar" aria-label="Main navigation">
+    <a class="brand" routerLink="/dashboard" (click)="closeMenu()"><span class="brand-mark">S</span><span>SPRY</span></a>
+    <nav class="nav-list">
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()"><span>⌂</span> Dashboard</a>
+      <a routerLink="/assignment" routerLinkActive="active" (click)="closeMenu()"><span>▤</span> Assignment</a>
+      <a routerLink="/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()"><span>✓</span> Tasks</a>
+      <a routerLink="/tasks/completed" routerLinkActive="active" (click)="closeMenu()"><span>◉</span> Completed</a>
+    </nav>
+    <div class="sidebar-footer"><button class="nav-action" type="button" (click)="logout()"><span>↪</span> Sign out</button></div>
+  </aside>
+  <div class="main-column">
+    <header class="app-header">
+      <button class="icon-button menu-button" type="button" aria-label="Open navigation" (click)="menuOpen.set(true)">☰</button>
+      <div class="header-spacer"></div>
+      <button class="icon-button notification" type="button" aria-label="Notifications">●</button>
+      <div class="user-avatar" aria-hidden="true">VS</div>
+      <div class="user-copy"><strong>Vishal Sharma</strong><span>Administrator</span></div>
+    </header>
+    <main class="content"><router-outlet /></main>
+  </div>
+</div>

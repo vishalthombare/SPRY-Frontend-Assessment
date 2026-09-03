@@ -1,0 +1,7 @@
+<header class="page-header"><div><p class="eyebrow">Workspace</p><h1>Tasks</h1><p>Keep the team focused on what matters next.</p></div><app-button (pressed)="addTask()"><span aria-hidden="true">＋</span> Add task</app-button></header>
+<section class="summary-grid" aria-label="Task summary"><app-task-summary-card label="Total tasks" value="12" hint="Across all projects" icon="▤" /><app-task-summary-card label="In progress" value="4" hint="2 due this week" icon="◷" tone="amber" /><app-task-summary-card label="Completed" value="24" hint="This month" icon="✓" tone="green" /></section>
+<app-task-filters />
+<section class="task-list card"><header><div><h2>Current tasks</h2><span>2 tasks</span></div></header>@for (task of previewTasks; track task.id) { <app-task-row [task]="task" (edit)="editTask($event)" (remove)="deleteTarget.set($event)" /> }</section>
+<app-task-form-dialog [open]="formOpen()" [task]="selectedTask()" (save)="previewSave($event)" (cancel)="closeForm()" />
+<app-confirm-dialog [open]="deleteTarget() !== null" title="Delete this task?" message="This action cannot be undone. The task will be permanently removed." confirmLabel="Delete task" [destructive]="true" (cancel)="deleteTarget.set(null)" (confirm)="confirmDelete()" />
+<app-toast [open]="toastOpen()" title="Component ready" message="Task persistence will be connected in the next logic phase." (dismiss)="toastOpen.set(false)" />

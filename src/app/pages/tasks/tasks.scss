@@ -1,0 +1,4 @@
+@use '../../../styles/variables' as v;
+.eyebrow { margin: 0 0 .35rem !important; color: v.$color-primary !important; font-size: .72rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }.summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }.task-list { padding-top: .4rem; padding-bottom: .4rem; }.task-list > header { padding: .9rem 0 .4rem; }.task-list > header div { display: flex; align-items: center; justify-content: space-between; }.task-list h2 { margin: 0; }.task-list header span { color: v.$color-muted; font-size: .78rem; }
+@media (max-width: v.$breakpoint-tablet) { .summary-grid { grid-template-columns: 1fr 1fr; } }.summary-grid app-task-summary-card:last-child { grid-column: auto; }
+@media (max-width: v.$breakpoint-mobile) { .summary-grid { grid-template-columns: 1fr; } }

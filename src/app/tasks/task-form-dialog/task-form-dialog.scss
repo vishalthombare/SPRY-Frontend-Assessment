@@ -1,0 +1,12 @@
+@use '../../../styles/variables' as v;
+.task-dialog { width: min(100%, 40rem); max-height: calc(100vh - 2rem); overflow: auto; }
+.dialog-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.eyebrow { display: block; margin-bottom: .25rem; color: v.$color-primary; font-size: .7rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.close { border: 0; color: v.$color-muted; background: transparent; font-size: 1.5rem; cursor: pointer; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.field { display: grid; align-content: start; gap: .45rem; color: v.$color-text; font-size: .85rem; font-weight: 650; }
+.field--wide { grid-column: 1 / -1; }
+input, textarea, select { width: 100%; padding: .72rem .8rem; border: 1px solid v.$color-border; border-radius: v.$radius-md; color: v.$color-text; background: #fff; outline: none; resize: vertical; }
+input:focus, textarea:focus, select:focus { border-color: v.$color-primary; box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+small { color: v.$color-danger; font-weight: 500; }
+@media (max-width: v.$breakpoint-mobile) { .form-grid { grid-template-columns: 1fr; } .field--wide { grid-column: auto; } }

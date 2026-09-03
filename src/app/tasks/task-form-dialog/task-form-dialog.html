@@ -1,0 +1,18 @@
+@if (open) {
+  <div class="dialog-backdrop" role="presentation" (click)="cancel.emit()">
+    <section class="dialog task-dialog" role="dialog" aria-modal="true" [attr.aria-labelledby]="titleId" (click)="$event.stopPropagation()">
+      <header class="dialog-header"><div><span class="eyebrow">{{ task === null ? 'New task' : 'Edit task' }}</span><h2 [id]="titleId">{{ task === null ? 'Create a task' : 'Update task' }}</h2></div><button class="close" type="button" aria-label="Close" (click)="cancel.emit()">×</button></header>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="dialog-body form-grid">
+          <label class="field field--wide">Title<input formControlName="title" placeholder="What needs to be done?" />@if (form.controls.title.touched && form.controls.title.invalid) { <small>A title is required.</small> }</label>
+          <label class="field field--wide">Description<textarea formControlName="description" rows="3" placeholder="Add useful context"></textarea></label>
+          <label class="field">Assignee<input formControlName="assignee" placeholder="Team member" />@if (form.controls.assignee.touched && form.controls.assignee.invalid) { <small>An assignee is required.</small> }</label>
+          <label class="field">Due date<input type="date" formControlName="dueDate" />@if (form.controls.dueDate.touched && form.controls.dueDate.invalid) { <small>A due date is required.</small> }</label>
+          <label class="field">Priority<select formControlName="priority"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
+          <label class="field">Status<select formControlName="status"><option value="todo">To do</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select></label>
+        </div>
+        <footer class="dialog-actions"><app-button variant="secondary" (pressed)="cancel.emit()">Cancel</app-button><app-button type="submit">{{ task === null ? 'Create task' : 'Save changes' }}</app-button></footer>
+      </form>
+    </section>
+  </div>
+}

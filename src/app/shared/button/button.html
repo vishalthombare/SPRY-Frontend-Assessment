@@ -1,0 +1,12 @@
+<button
+  class="ui-button ui-button--{{ variant }}"
+  [class.ui-button--block]="block"
+  [disabled]="disabled || loading"
+  [attr.type]="type"
+  (click)="pressed.emit()"
+>
+  @if (loading) {
+    <span class="button-spinner" aria-hidden="true"></span>
+  }
+  <ng-content />
+</button>
