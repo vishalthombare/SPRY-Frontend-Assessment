@@ -1,5 +1,29 @@
 <article class="task-row">
-  <button class="check" type="button" [class.checked]="task.status === 'completed'" [attr.aria-label]="task.status === 'completed' ? 'Mark task incomplete' : 'Mark task complete'" (click)="toggleComplete.emit(task)">{{ task.status === 'completed' ? '✓' : '' }}</button>
-  <div class="task-copy"><div class="task-title"><strong>{{ task.title }}</strong><span class="priority priority--{{ task.priority }}">{{ task.priority }}</span></div><p>{{ task.description }}</p><div class="meta"><span>{{ task.assignee }}</span><span>Due {{ task.dueDate }}</span></div></div>
-  <div class="row-actions"><button type="button" aria-label="Edit task" (click)="edit.emit(task)">Edit</button><button class="remove" type="button" aria-label="Delete task" (click)="remove.emit(task)">Delete</button></div>
+  <button
+    class="status-check"
+    type="button"
+    [class.checked]="task.status === 'completed'"
+    [disabled]="task.status === 'completed'"
+    [attr.aria-label]="task.status === 'completed' ? 'Task completed' : 'Complete task'"
+    (click)="complete.emit(task)"
+  >
+    {{ task.status === 'completed' ? '✓' : '' }}
+  </button>
+  <div class="task-copy">
+    <div class="task-title">
+      <strong>{{ task.title }}</strong
+      ><span class="status status--{{ task.status }}">{{ statusLabel }}</span>
+    </div>
+    <p>{{ task.description }}</p>
+    <small>▦&nbsp; Due {{ task.dueDate | date: 'MMM d, y' : 'UTC' }}</small>
+  </div>
+  <div class="actions">
+    @if (completedView) {
+      <button class="restore" type="button" (click)="restore.emit(task)">↻ Restore</button>
+    } @else if (task.status !== 'completed') {
+      <button class="complete" type="button" (click)="complete.emit(task)">✓ Complete</button>
+    }
+    <button type="button" aria-label="Edit task" (click)="edit.emit(task)">✎</button
+    ><button type="button" aria-label="Delete task" (click)="remove.emit(task)">♜</button>
+  </div>
 </article>

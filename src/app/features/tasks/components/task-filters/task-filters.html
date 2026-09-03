@@ -1,1 +1,25 @@
-<form class="filters" [formGroup]="form"><label class="search"><span aria-hidden="true">⌕</span><input type="search" formControlName="query" placeholder="Search tasks" aria-label="Search tasks" /></label><select formControlName="status" aria-label="Filter by status"><option value="all">All statuses</option><option value="todo">To do</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select><select formControlName="priority" aria-label="Filter by priority"><option value="all">All priorities</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></form>
+<form class="filters" [formGroup]="form">
+  <label class="search"
+    ><span aria-hidden="true">⌕</span
+    ><input
+      type="search"
+      formControlName="query"
+      placeholder="Search by title or description"
+      aria-label="Search tasks"
+  /></label>
+  @if (!completedOnly) {
+    <select formControlName="status" aria-label="Filter by status">
+      <option value="all">All statuses</option>
+      <option value="pending">Pending</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+    </select>
+  }
+  <select formControlName="sort" aria-label="Sort by due date">
+    <option value="asc">Due date earliest</option>
+    <option value="desc">Due date latest</option>
+  </select>
+  @if (hasActiveFilters) {
+    <button class="clear" type="button" (click)="clear()">Clear filters</button>
+  }
+</form>

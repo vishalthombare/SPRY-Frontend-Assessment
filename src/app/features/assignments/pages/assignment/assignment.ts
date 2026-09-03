@@ -1,3 +1,9 @@
 import { Component } from '@angular/core';
-@Component({ selector: 'app-assignment', templateUrl: './assignment.html', styleUrl: './assignment.scss' })
+import { RouterLink } from '@angular/router';
+@Component({
+  selector: 'app-assignment',
+  imports: [RouterLink],
+  templateUrl: './assignment.html',
+  styleUrl: './assignment.scss',
+})
 export class Assignment {}

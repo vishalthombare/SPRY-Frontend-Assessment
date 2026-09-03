@@ -1,36 +1,122 @@
 <main class="auth-shell">
   <section class="brand-panel" aria-labelledby="portal-introduction">
-    <div class="brand-glow glow-one"></div><div class="brand-glow glow-two"></div>
-    <svg class="brand-lines" aria-hidden="true" viewBox="0 0 920 1040" fill="none" preserveAspectRatio="none">
-      <path d="M-75 895C142 764 267 1010 515 853C710 730 744 539 994 435"></path><path d="M-91 927C137 797 282 1033 541 872C748 744 777 557 1018 474"></path><path d="M-106 960C129 830 297 1056 567 893C786 761 812 579 1041 514"></path><path d="M298 -37C442 121 384 271 508 376C650 496 764 337 957 475"></path>
+    <div class="brand-glow glow-one"></div>
+    <div class="brand-glow glow-two"></div>
+    <svg
+      class="brand-lines"
+      aria-hidden="true"
+      viewBox="0 0 920 1040"
+      fill="none"
+      preserveAspectRatio="none"
+    >
+      <path d="M-75 895C142 764 267 1010 515 853C710 730 744 539 994 435"></path>
+      <path d="M-91 927C137 797 282 1033 541 872C748 744 777 557 1018 474"></path>
+      <path d="M-106 960C129 830 297 1056 567 893C786 761 812 579 1041 514"></path>
+      <path d="M298 -37C442 121 384 271 508 376C650 496 764 337 957 475"></path>
     </svg>
-    <header class="brand-header"><span class="wordmark">SPRY</span><span class="portal-label">Assessment Review</span></header>
+    <header class="brand-header">
+      <span class="wordmark">SPRY</span><span class="portal-label">Assessment Review</span>
+    </header>
     <div class="brand-content">
       <div class="assignment-label"><span></span>Frontend engineering assignment</div>
       <h1 id="portal-introduction">Frontend engineering, <em>ready for review.</em></h1>
-      <p class="brand-copy">Explore the implementation, review the approach, and access the source repository from one secure workspace prepared for SPRY.</p>
-      <div class="challenge-card"><div class="challenge-icon" aria-hidden="true">&lt;/&gt;</div><div class="challenge-copy"><span>Position</span><strong>Software Development Engineer - Frontend</strong><span>Angular · TypeScript · HTML/SCSS</span></div><span class="challenge-check" aria-label="Ready">✓</span></div>
-      <div class="journey" aria-label="Assessment steps"><div><span>01</span><p>Review requirements</p></div><b>→</b><div><span>02</span><p>Explore solution</p></div><b>→</b><div><span>03</span><p>View repository</p></div></div>
+      <p class="brand-copy">
+        Explore the implementation, review the approach, and access the source repository from one
+        secure workspace prepared for SPRY.
+      </p>
+      <div class="challenge-card">
+        <div class="challenge-icon" aria-hidden="true">&lt;/&gt;</div>
+        <div class="challenge-copy">
+          <span>Position</span><strong>Software Development Engineer - Frontend</strong
+          ><span>Angular · TypeScript · HTML/SCSS</span>
+        </div>
+        <span class="challenge-check" aria-label="Ready">✓</span>
+      </div>
+      <div class="journey" aria-label="Assessment steps">
+        <div>
+          <span>01</span>
+          <p>Review requirements</p>
+        </div>
+        <b>→</b>
+        <div>
+          <span>02</span>
+          <p>Explore solution</p>
+        </div>
+        <b>→</b>
+        <div>
+          <span>03</span>
+          <p>View repository</p>
+        </div>
+      </div>
     </div>
-    <footer class="brand-footer">♢&nbsp; Independent technical assessment · Secure reviewer access</footer>
+    <footer class="brand-footer">
+      ♢&nbsp; Independent technical assessment · Secure reviewer access
+    </footer>
   </section>
 
   <section class="login-panel" aria-labelledby="login-title">
-    <header class="mobile-brand"><span class="wordmark">SPRY</span><span class="portal-label">Assessment Review</span></header>
+    <header class="mobile-brand">
+      <span class="wordmark">SPRY</span><span class="portal-label">Assessment Review</span>
+    </header>
     <div class="login-wrap">
-      <div class="login-heading"><div class="login-icon" aria-hidden="true">♙</div><p>Reviewer access</p><h2 id="login-title">Sign in to review the assignment</h2><span>Use the reviewer credentials provided with this submission.</span></div>
+      <div class="login-heading">
+        <div class="login-icon" aria-hidden="true">♙</div>
+        <p>Reviewer access</p>
+        <h2 id="login-title">Sign in to review the assignment</h2>
+        <span>Use the reviewer credentials provided with this submission.</span>
+      </div>
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
         <label for="email">Email address</label>
-        <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="you@example.com" [class.invalid]="form.controls.email.touched && form.controls.email.invalid" />
-        @if (form.controls.email.touched && form.controls.email.invalid) { <small>Please enter a valid email address.</small> }
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <small>Please enter a valid email address.</small>
+        }
         <label class="password-label" for="password">Password</label>
-        <div class="password-field"><input id="password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" placeholder="Enter your password" [class.invalid]="form.controls.password.touched && form.controls.password.invalid" /><button type="button" [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'" (click)="showPassword.set(!showPassword())">{{ showPassword() ? '◉' : '◎' }}</button></div>
-        @if (form.controls.password.touched && form.controls.password.invalid) { <small>Password must be at least 6 characters.</small> }
-        <button class="sign-in-button" type="submit">Sign in <span aria-hidden="true">→</span></button>
+        <div class="password-field">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            [class.invalid]="form.controls.password.touched && form.controls.password.invalid"
+          /><button
+            type="button"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            (click)="showPassword.set(!showPassword())"
+          >
+            {{ showPassword() ? '◉' : '◎' }}
+          </button>
+        </div>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <small>Password must be at least 6 characters.</small>
+        }
+        <button class="sign-in-button" type="submit">
+          Sign in <span aria-hidden="true">→</span>
+        </button>
       </form>
-      <div class="repository-note"><span aria-hidden="true">⑂</span><div><strong>The review workspace is ready</strong><small>Live application, technical notes and source code are available after sign-in.</small></div></div>
-      <p class="support-copy">Need access? Contact Vishal Thombare using the details shared with this submission.</p>
+      <div class="repository-note">
+        <span aria-hidden="true">⑂</span>
+        <div>
+          <strong>The review workspace is ready</strong
+          ><small
+            >Live application, technical notes and source code are available after sign-in.</small
+          >
+        </div>
+      </div>
+      <p class="support-copy">
+        Need access? Contact Vishal Thombare using the details shared with this submission.
+      </p>
     </div>
-    <footer class="login-footer">Independent interview assignment · Not an official SPRY Therapeutics product</footer>
+    <footer class="login-footer">
+      Independent interview assignment · Not an official SPRY Therapeutics product
+    </footer>
   </section>
 </main>

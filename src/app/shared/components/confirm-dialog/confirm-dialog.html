@@ -1,9 +1,25 @@
 @if (open) {
   <div class="dialog-backdrop" role="presentation" (click)="cancel.emit()">
-    <section class="dialog" role="alertdialog" aria-modal="true" [attr.aria-labelledby]="titleId" (click)="$event.stopPropagation()">
-      <header class="dialog-header"><span class="dialog-icon" aria-hidden="true">!</span><h2 [id]="titleId">{{ title }}</h2></header>
-      <div class="dialog-body"><p>{{ message }}</p></div>
-      <footer class="dialog-actions"><app-button variant="secondary" (pressed)="cancel.emit()">Cancel</app-button><app-button [variant]="destructive ? 'danger' : 'primary'" (pressed)="confirm.emit()">{{ confirmLabel }}</app-button></footer>
+    <section
+      class="dialog"
+      role="alertdialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="titleId"
+      (click)="$event.stopPropagation()"
+    >
+      <header class="dialog-header">
+        <span class="dialog-icon" aria-hidden="true">!</span>
+        <h2 [id]="titleId">{{ title }}</h2>
+      </header>
+      <div class="dialog-body">
+        <p>{{ message }}</p>
+      </div>
+      <footer class="dialog-actions">
+        <app-button variant="secondary" (pressed)="cancel.emit()">Cancel</app-button
+        ><app-button [variant]="destructive ? 'danger' : 'primary'" (pressed)="confirm.emit()">{{
+          confirmLabel
+        }}</app-button>
+      </footer>
     </section>
   </div>
 }

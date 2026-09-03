@@ -1,5 +1,141 @@
-<header class="page-header">
-  <div><h1>Assignment</h1><p>Manage people and their assigned work.</p></div>
-  <button class="button button-primary">Create assignment</button>
-</header>
-<section class="card"><h2>Active assignments</h2><p>Your assignment list will appear here.</p></section>
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a routerLink="/dashboard">Overview</a><span>›</span><span>Assignment 01</span>
+</nav>
+<section class="hero" aria-labelledby="assignment-title">
+  <div class="hero-copy">
+    <span class="hero-kicker">&lt;/&gt;&nbsp; Frontend coding assignment</span>
+    <h1 id="assignment-title">Task Management Dashboard</h1>
+    <p>
+      Build a responsive Angular application that makes everyday task planning clear, fast and
+      reliable.
+    </p>
+    <div class="hero-tags">
+      <span>Angular</span><span>RxJS</span><span>Reactive Forms</span><span>Responsive UI</span>
+    </div>
+  </div>
+  <div class="hero-status">
+    <span>✓ Requirements confirmed</span><strong>Ready for implementation review</strong
+    ><small>Software Development Engineer - Frontend</small>
+  </div>
+</section>
+<div class="detail-grid">
+  <section class="detail-card requirements-card">
+    <header class="card-heading">
+      <div>
+        <span class="section-label">Core scope</span>
+        <h2>Functional requirements</h2>
+        <p>The submitted solution should cover each of the following capabilities.</p>
+      </div>
+      <span class="requirement-total">5 requirements</span>
+    </header>
+    <div class="requirements-list">
+      <article class="requirement-row">
+        <span class="number">01</span>
+        <div>
+          <h3>Complete task CRUD</h3>
+          <p>Create, view, edit and delete tasks with a title and description.</p>
+          <div class="inline-tags">
+            <span>Create</span><span>Read</span><span>Update</span><span>Delete</span>
+          </div>
+        </div>
+        <b>✓</b>
+      </article>
+      <article class="requirement-row">
+        <span class="number">02</span>
+        <div>
+          <h3>Clear workflow statuses</h3>
+          <p>Every task must support Pending, In Progress and Completed states.</p>
+          <div class="status-tags">
+            <span class="pending">Pending</span><span class="progress">In Progress</span
+            ><span class="completed">Completed</span>
+          </div>
+        </div>
+        <b>↻</b>
+      </article>
+      <article class="requirement-row">
+        <span class="number">03</span>
+        <div>
+          <h3>Required due date</h3>
+          <p>Validate a mandatory due date and allow the task list to be sorted by it.</p>
+        </div>
+        <b>◷</b>
+      </article>
+      <article class="requirement-row">
+        <span class="number">04</span>
+        <div>
+          <h3>Filter, sort and summarize</h3>
+          <p>Filter tasks by status, sort by due date and show top-level status counts.</p>
+        </div>
+        <b>⇅</b>
+      </article>
+      <article class="requirement-row">
+        <span class="number">05</span>
+        <div>
+          <h3>Production-quality experience</h3>
+          <p>
+            Use reusable modal, form and display components with responsive layouts, validation and
+            error handling.
+          </p>
+        </div>
+        <b>◇</b>
+      </article>
+    </div>
+  </section>
+  <aside class="side-stack">
+    <section class="detail-card side-card">
+      <span class="section-label">Technical expectations</span>
+      <h2>Implementation approach</h2>
+      <div class="technical-list">
+        <div>
+          <b>&lt;/&gt;</b
+          ><span
+            ><strong>Angular standalone</strong><small>Reusable feature components</small></span
+          >
+        </div>
+        <div>
+          <b>↻</b><span><strong>RxJS state</strong><small>BehaviorSubject-based store</small></span>
+        </div>
+        <div>
+          <b>≡</b
+          ><span><strong>Reactive Forms</strong><small>Field and form validation</small></span>
+        </div>
+        <div>
+          <b>⑂</b
+          ><span><strong>Required routes</strong><small>/tasks · /tasks/completed</small></span>
+        </div>
+        <div>
+          <b>◇</b
+          ><span><strong>Persistence</strong><small>Local storage or API adapter</small></span>
+        </div>
+      </div>
+    </section>
+    <section class="detail-card side-card evaluation">
+      <span class="section-label">Review focus</span>
+      <h2>Evaluation checklist</h2>
+      <ul>
+        <li>✓ Component structure and reusability</li>
+        <li>✓ State and data-flow clarity</li>
+        <li>✓ Responsive and accessible UI</li>
+        <li>✓ Validation and error handling</li>
+      </ul>
+    </section>
+  </aside>
+</div>
+<section class="detail-card submission">
+  <div class="submission-intro">
+    <span class="submission-icon">◇</span>
+    <div>
+      <span class="section-label">Expected submission</span>
+      <h2>Reviewer-ready deliverables</h2>
+      <p>Provide a working application, source repository and concise setup documentation.</p>
+    </div>
+  </div>
+  <div class="submission-points">
+    <span>↗ Deployed responsive app</span><span>⑂ Clean source repository</span
+    ><span>≡ README and test notes</span>
+  </div>
+  <a routerLink="/tasks">Open task workspace <span>→</span></a>
+</section>
+<footer class="notice">
+  ⓘ&nbsp; This assignment brief reflects the confirmed SPRY frontend coding-round requirements.
+</footer>

@@ -1,23 +1,77 @@
 <div class="app-shell" [class.menu-open]="menuOpen()">
   <button class="sidebar-backdrop" aria-label="Close navigation" (click)="closeMenu()"></button>
-  <aside class="sidebar" aria-label="Main navigation">
-    <a class="brand" routerLink="/dashboard" (click)="closeMenu()"><span class="brand-mark">S</span><span>SPRY</span></a>
+  <aside class="sidebar" aria-label="Assessment navigation">
+    <div class="sidebar-brand">
+      <a routerLink="/dashboard" (click)="closeMenu()"
+        ><span class="wordmark">SPRY</span><span class="brand-label">Assessment</span></a
+      ><button
+        class="close-button"
+        type="button"
+        aria-label="Close navigation"
+        (click)="closeMenu()"
+      >
+        ×
+      </button>
+    </div>
     <nav class="nav-list">
-      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()"><span>⌂</span> Dashboard</a>
-      <a routerLink="/assignment" routerLinkActive="active" (click)="closeMenu()"><span>▤</span> Assignment</a>
-      <a routerLink="/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()"><span>✓</span> Tasks</a>
-      <a routerLink="/tasks/completed" routerLinkActive="active" (click)="closeMenu()"><span>◉</span> Completed</a>
+      <span class="nav-caption">Workspace</span
+      ><a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()"
+        ><b>⌂</b>Overview</a
+      ><a routerLink="/assignment" routerLinkActive="active" (click)="closeMenu()"
+        ><b>□</b>Assignment</a
+      ><a routerLink="/tasks" routerLinkActive="active" (click)="closeMenu()"
+        ><b>☷</b>Task Management</a
+      >
     </nav>
-    <div class="sidebar-footer"><button class="nav-action" type="button" (click)="logout()"><span>↪</span> Sign out</button></div>
+    <div class="review-card">
+      <span>♢</span>
+      <div>
+        <strong>Private review</strong><small>Access is limited to invited reviewers.</small>
+      </div>
+    </div>
+    <div class="sidebar-profile">
+      <span class="avatar">VT</span>
+      <div><strong>Vishal Thombare</strong><small>Candidate</small></div>
+      <button type="button" aria-label="Sign out" (click)="logout()">↪</button>
+    </div>
   </aside>
-  <div class="main-column">
+  <section class="main-column">
     <header class="app-header">
-      <button class="icon-button menu-button" type="button" aria-label="Open navigation" (click)="menuOpen.set(true)">☰</button>
-      <div class="header-spacer"></div>
-      <button class="icon-button notification" type="button" aria-label="Notifications">●</button>
-      <div class="user-avatar" aria-hidden="true">VS</div>
-      <div class="user-copy"><strong>Vishal Sharma</strong><span>Administrator</span></div>
+      <div class="header-context">
+        <button
+          class="menu-button"
+          type="button"
+          aria-label="Open navigation"
+          (click)="menuOpen.set(true)"
+        >
+          ☰
+        </button>
+        <div><span>Candidate portal</span><strong>Frontend assessment</strong></div>
+      </div>
+      <div class="header-actions">
+        <span class="secure-session">♢ Secure session</span
+        ><button type="button" aria-label="Notifications">♧</button>
+        <div class="profile-menu">
+          <button
+            class="avatar avatar-button"
+            type="button"
+            aria-label="Open profile menu"
+            [attr.aria-expanded]="profileOpen()"
+            (click)="profileOpen.set(!profileOpen())"
+          >
+            VT
+          </button>
+          @if (profileOpen()) {
+            <div class="profile-popover">
+              <div><strong>Vishal Thombare</strong><span>Candidate</span></div>
+              <button type="button" (click)="logout()">
+                <span aria-hidden="true">↪</span> Sign out
+              </button>
+            </div>
+          }
+        </div>
+      </div>
     </header>
     <main class="content"><router-outlet /></main>
-  </div>
+  </section>
 </div>

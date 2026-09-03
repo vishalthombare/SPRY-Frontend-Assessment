@@ -1,7 +1,101 @@
 @use '../../../../../styles/variables' as v;
-.task-row { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: start; padding: 1.1rem 0; border-bottom: 1px solid v.$color-border; }
-.task-row:last-child { border-bottom: 0; }.check { display: grid; place-items: center; width: 1.35rem; height: 1.35rem; margin-top: .1rem; border: 1.5px solid #cbd5e1; border-radius: .4rem; color: #fff; background: #fff; cursor: pointer; }.check.checked { border-color: v.$color-success; background: v.$color-success; }
-.task-title { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }.task-copy p { margin: .35rem 0 .6rem; color: v.$color-muted; font-size: .88rem; }.meta { display: flex; flex-wrap: wrap; gap: 1rem; color: v.$color-muted; font-size: .75rem; }
-.priority { padding: .18rem .45rem; border-radius: 999px; font-size: .65rem; font-weight: 750; text-transform: capitalize; }.priority--low { color: #047857; background: #ecfdf5; }.priority--medium { color: #a16207; background: #fefce8; }.priority--high { color: #b91c1c; background: #fef2f2; }
-.row-actions { display: flex; gap: .25rem; }.row-actions button { padding: .4rem; border: 0; color: v.$color-primary; background: transparent; font-size: .78rem; cursor: pointer; }.row-actions .remove { color: v.$color-danger; }
-@media (max-width: v.$breakpoint-mobile) { .task-row { grid-template-columns: auto 1fr; }.row-actions { grid-column: 2; } }
+.task-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid v.$color-border;
+}
+.task-row:last-child {
+  border-bottom: 0;
+}
+.status-check {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid #d8d0dc;
+  border-radius: 0.48rem;
+  color: #527c1d;
+  background: #fff;
+  cursor: pointer;
+}
+.status-check.checked {
+  border-color: #cde7a5;
+  background: #eff8df;
+}
+.task-copy {
+  min-width: 0;
+}
+.task-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.task-title strong {
+  font-size: 0.87rem;
+}
+.task-copy p {
+  margin: 0.3rem 0 0.45rem;
+  color: v.$color-muted;
+  font-size: 0.74rem;
+}
+.task-copy small {
+  color: #8f8594;
+  font-size: 0.67rem;
+}
+.status {
+  padding: 0.26rem 0.5rem;
+  border-radius: 99px;
+  font-size: 0.61rem;
+  font-weight: 750;
+}
+.status--pending {
+  color: #8a5b12;
+  background: #fff4d9;
+}
+.status--in-progress {
+  color: #4e5d9b;
+  background: #edf0ff;
+}
+.status--completed {
+  color: #557a22;
+  background: #eff8df;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.actions button {
+  min-width: 2.2rem;
+  height: 2.2rem;
+  padding: 0 0.6rem;
+  border: 1px solid v.$color-border;
+  border-radius: 0.6rem;
+  color: #6d6172;
+  background: #fff;
+  cursor: pointer;
+}
+.actions .complete,
+.actions .restore {
+  color: #4f741e;
+  background: #f5faec;
+  border-color: #dbeabe;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+@media (max-width: 650px) {
+  .task-row {
+    grid-template-columns: auto 1fr;
+  }
+  .actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+  .task-copy p {
+    line-height: 1.45;
+  }
+}

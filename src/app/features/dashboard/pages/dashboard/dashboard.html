@@ -1,9 +1,133 @@
-<header class="page-header">
-  <div><h1>Dashboard</h1><p>A quick view of your workspace activity.</p></div>
-  <button class="button button-primary">New task</button>
+<header class="welcome">
+  <div>
+    <span class="kicker">✦ Assessment workspace</span>
+    <h1>Welcome, Vishal.</h1>
+    <p>Your frontend assignment is organized and ready for reviewer access.</p>
+  </div>
+  <span class="ready-badge">✓ Ready for review</span>
 </header>
-<section class="grid">
-  <article class="card"><h2>Open tasks</h2><strong class="metric">12</strong><p>3 due this week</p></article>
-  <article class="card"><h2>Assignments</h2><strong class="metric">6</strong><p>2 awaiting review</p></article>
-  <article class="card"><h2>Completed</h2><strong class="metric">24</strong><p>Up 18% this month</p></article>
+<section class="summary-grid" aria-label="Assessment summary">
+  <article class="summary-card featured">
+    <span class="summary-icon lime">✓</span>
+    <div>
+      <span>Assessment status</span><strong>Submission prepared</strong
+      ><small>All primary links are available</small>
+    </div>
+    <em>Complete</em>
+  </article>
+  <article class="summary-card">
+    <span class="summary-icon violet">◇</span>
+    <div>
+      <span>Deliverables</span><strong>3 resources</strong
+      ><small>Application, source and notes</small>
+    </div>
+    <em class="neutral">Available</em>
+  </article>
+  <article class="summary-card">
+    <span class="summary-icon soft">&lt;/&gt;</span>
+    <div>
+      <span>Primary stack</span><strong>Angular</strong><small>TypeScript · HTML · SCSS</small>
+    </div>
+    <em class="neutral">Frontend</em>
+  </article>
 </section>
+<div class="content-grid">
+  <section class="panel assignment-card">
+    <div class="heading-row">
+      <div>
+        <span class="section-label">Current assignment</span>
+        <h2>Software Development Engineer - Frontend</h2>
+      </div>
+      <span class="number">01</span>
+    </div>
+    <p class="description">
+      Review the responsive Angular implementation, component structure, accessibility choices and
+      overall frontend engineering approach.
+    </p>
+    <div class="technology-list">
+      <span>Angular</span><span>TypeScript</span><span>HTML5</span><span>SCSS</span
+      ><span>Responsive UI</span>
+    </div>
+    <div class="meta-grid">
+      <div>
+        <b>○</b><span>Candidate<strong>Vishal Thombare</strong></span>
+      </div>
+      <div>
+        <b>◷</b><span>Review window<strong>Active</strong></span>
+      </div>
+      <div>
+        <b>□</b><span>Visibility<strong>Private access</strong></span>
+      </div>
+    </div>
+    <a class="primary-link" routerLink="/assignment">View assignment details <span>→</span></a>
+  </section>
+  <aside class="panel progress-card">
+    <div class="heading-row">
+      <div>
+        <span class="section-label">Submission progress</span>
+        <h2>Review readiness</h2>
+      </div>
+      <span class="progress-ring"><strong>75%</strong></span>
+    </div>
+    <div class="progress-list">
+      <div class="progress-item complete">
+        <span>✓</span>
+        <div><strong>Requirements reviewed</strong><small>Scope confirmed</small></div>
+      </div>
+      <div class="progress-item complete">
+        <span>✓</span>
+        <div><strong>Solution implemented</strong><small>Responsive frontend complete</small></div>
+      </div>
+      <div class="progress-item complete">
+        <span>✓</span>
+        <div><strong>Source published</strong><small>Repository access prepared</small></div>
+      </div>
+      <div class="progress-item">
+        <span>4</span>
+        <div><strong>Reviewer feedback</strong><small>Awaiting evaluation</small></div>
+      </div>
+    </div>
+  </aside>
+</div>
+<section class="panel deliverables" id="submission-resources">
+  <div class="deliverables-heading">
+    <div>
+      <span class="section-label">Review resources</span>
+      <h2>Submission Resources</h2>
+      <p>Everything needed to evaluate the implementation in one place.</p>
+    </div>
+    <span>3 of 3 available</span>
+  </div>
+  <div class="deliverables-grid">
+    <article>
+      <span class="resource-icon">↗</span>
+      <div>
+        <span class="status">● Available</span>
+        <h3>Live application</h3>
+        <p>Open the deployed frontend and review the responsive experience.</p>
+      </div>
+      <button type="button">Open <span>›</span></button>
+    </article>
+    <article>
+      <span class="resource-icon">⑂</span>
+      <div>
+        <span class="status">● Available</span>
+        <h3>Git repository</h3>
+        <p>Inspect the Angular structure, commits and implementation details.</p>
+      </div>
+      <button type="button">View <span>›</span></button>
+    </article>
+    <article>
+      <span class="resource-icon">≡</span>
+      <div>
+        <span class="status">● Ready</span>
+        <h3>README and technical documentation</h3>
+        <p>Read setup guidance, decisions and testing considerations.</p>
+      </div>
+      <button type="button">Read <span>›</span></button>
+    </article>
+  </div>
+</section>
+<footer class="notice">
+  &lt;/&gt;&nbsp; This portal is an independent interview submission prepared for SPRY Therapeutics.
+</footer>

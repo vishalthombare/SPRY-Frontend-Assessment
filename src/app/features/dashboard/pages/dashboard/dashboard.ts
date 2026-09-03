@@ -1,3 +1,9 @@
 import { Component } from '@angular/core';
-@Component({ selector: 'app-dashboard', templateUrl: './dashboard.html', styleUrl: './dashboard.scss' })
+import { RouterLink } from '@angular/router';
+@Component({
+  selector: 'app-dashboard',
+  imports: [RouterLink],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
+})
 export class Dashboard {}

@@ -1,6 +1,8 @@
 @if (open) {
   <aside class="toast toast--{{ type }}" role="status">
-    <span class="toast-icon" aria-hidden="true">{{ type === 'success' ? '✓' : type === 'error' ? '!' : 'i' }}</span>
+    <span class="toast-icon" aria-hidden="true">{{
+      type === 'success' ? '✓' : type === 'error' ? '!' : 'i'
+    }}</span>
     <div>
       <strong>{{ title }}</strong>
       @if (message) {

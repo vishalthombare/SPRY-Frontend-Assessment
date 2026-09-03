@@ -1,0 +1,165 @@
+@use '../../../../../styles/variables' as v;
+:host {
+  display: block;
+}
+.task-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.kicker,
+.section-label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: #8753cd;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.task-heading h1 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.2rem, 3.4vw, 3.35rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.task-heading p {
+  margin: 0.65rem 0 0;
+  color: v.$color-muted;
+}
+.add-button {
+  min-height: 2.8rem;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0.78rem;
+  color: #fff;
+  background: linear-gradient(105deg, #410650, #69247c);
+  box-shadow: 0 0.8rem 1.8rem rgba(75, 9, 91, 0.18);
+  font-weight: 750;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.summary-grid {
+  margin-top: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.workspace-card {
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 1px solid v.$color-border;
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2.8rem rgba(49, 28, 55, 0.04);
+}
+.workspace-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.2rem;
+}
+.workspace-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+.workspace-header > span {
+  padding: 0.35rem 0.55rem;
+  border-radius: 99px;
+  color: #6d6072;
+  background: #f3eff5;
+  font-size: 0.67rem;
+  font-weight: 750;
+}
+.section-label {
+  margin-bottom: 0.35rem;
+  font-size: 0.67rem;
+}
+.task-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0 1.2rem;
+  border-bottom: 1px solid v.$color-border;
+}
+.task-tabs a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 0.9rem;
+  color: #7b7080;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.task-tabs a.active {
+  color: v.$color-primary;
+}
+.task-tabs a.active::after {
+  position: absolute;
+  right: 0.7rem;
+  bottom: -1px;
+  left: 0.7rem;
+  height: 2px;
+  background: v.$color-primary;
+  content: '';
+}
+.task-tabs span {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  color: #4f741e;
+  background: #eff8df;
+  font-size: 0.62rem;
+}
+.task-list {
+  display: grid;
+}
+.secondary-button {
+  min-height: 2.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid v.$color-border;
+  border-radius: 0.7rem;
+  color: v.$color-primary;
+  background: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.persistence-note {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 0;
+  color: #938a97;
+  font-size: 0.7rem;
+}
+@media (max-width: 1100px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .task-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .add-button {
+    width: 100%;
+  }
+  .task-tabs {
+    overflow-x: auto;
+  }
+  .workspace-header {
+    align-items: flex-start;
+  }
+  .persistence-note {
+    text-align: center;
+    line-height: 1.4;
+  }
+}

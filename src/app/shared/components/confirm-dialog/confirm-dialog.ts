@@ -2,7 +2,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../button/button';
 
 @Component({
-  selector: 'app-confirm-dialog', imports: [ButtonComponent], templateUrl: './confirm-dialog.html', styleUrl: './confirm-dialog.scss',
+  selector: 'app-confirm-dialog',
+  imports: [ButtonComponent],
+  templateUrl: './confirm-dialog.html',
+  styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialogComponent {
   @Input() open = false;

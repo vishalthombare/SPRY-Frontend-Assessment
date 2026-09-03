@@ -1,27 +1,26 @@
-export type TaskStatus = 'todo' | 'in-progress' | 'completed';
-export type TaskPriority = 'low' | 'medium' | 'high';
-
+export type TaskStatus = 'pending' | 'in-progress' | 'completed';
+export type DueDateSort = 'asc' | 'desc';
 export interface Task {
   id: string;
   title: string;
   description: string;
-  assignee: string;
-  dueDate: string;
-  priority: TaskPriority;
   status: TaskStatus;
+  dueDate: string;
 }
-
 export interface TaskFormValue {
   title: string;
   description: string;
-  assignee: string;
-  dueDate: string;
-  priority: TaskPriority;
   status: TaskStatus;
+  dueDate: string;
 }
-
 export interface TaskFilterValue {
   query: string;
   status: TaskStatus | 'all';
-  priority: TaskPriority | 'all';
+  sort: DueDateSort;
+}
+export interface TaskCounts {
+  total: number;
+  pending: number;
+  inProgress: number;
+  completed: number;
 }

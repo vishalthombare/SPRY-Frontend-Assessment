@@ -1,0 +1,108 @@
+<header class="task-heading">
+  <div>
+    <span class="kicker">✦ Implementation workspace</span>
+    <h1>Task Management</h1>
+    <p>Plan, prioritize and complete the frontend assessment from one clear workspace.</p>
+  </div>
+  <button class="add-button" type="button" (click)="addTask()">＋ Add task</button>
+</header>
+<section class="summary-grid" aria-label="Task summary">
+  <app-task-summary-card
+    label="Total"
+    [value]="counts().total"
+    hint="Assessment scope"
+    icon="☷"
+  /><app-task-summary-card
+    label="Pending"
+    [value]="counts().pending"
+    hint="Ready to start"
+    icon="○"
+    tone="amber"
+  /><app-task-summary-card
+    label="In Progress"
+    [value]="counts().inProgress"
+    hint="Currently active"
+    icon="◷"
+  /><app-task-summary-card
+    label="Completed"
+    [value]="counts().completed"
+    hint="Finished work"
+    icon="✓"
+    tone="green"
+  />
+</section>
+<section class="workspace-card">
+  <header class="workspace-header">
+    <div>
+      <span class="section-label">Current workload</span>
+      <h2>{{ completedView() ? 'Finished work' : 'All assessment tasks' }}</h2>
+    </div>
+    <span>{{ visibleTasks().length }} {{ visibleTasks().length === 1 ? 'task' : 'tasks' }}</span>
+  </header>
+  <nav class="task-tabs" aria-label="Task views">
+    <a routerLink="/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+      >All Tasks</a
+    ><a routerLink="/tasks/completed" routerLinkActive="active"
+      >Completed Tasks <span>{{ counts().completed }}</span></a
+    >
+  </nav>
+  <app-task-filters [completedOnly]="completedView()" (filtersChange)="setFilters($event)" />
+  @if (loading()) {
+    <app-loading-spinner label="Loading tasks…" />
+  } @else if (error()) {
+    <app-empty-state icon="!" title="Tasks are unavailable" [description]="error() ?? ''"
+      ><button class="secondary-button" type="button" (click)="retry()">
+        Try again
+      </button></app-empty-state
+    >
+  } @else if (visibleTasks().length === 0) {
+    <app-empty-state
+      [icon]="completedView() ? '✓' : '⌕'"
+      [title]="completedView() ? 'No completed tasks' : 'No matching tasks'"
+      [description]="
+        completedView()
+          ? 'Complete a task and it will appear here.'
+          : 'Try clearing or changing your search and filters.'
+      "
+    />
+  } @else {
+    <div class="task-list">
+      @for (task of visibleTasks(); track task.id) {
+        <app-task-row
+          [task]="task"
+          [completedView]="completedView()"
+          (edit)="editTask($event)"
+          (remove)="deleteTarget.set($event)"
+          (complete)="completeTask($event)"
+          (restore)="restoreTask($event)"
+        />
+      }
+    </div>
+  }
+</section>
+<footer class="persistence-note">
+  ♢&nbsp; Task changes are saved locally and remain available after refresh.
+</footer>
+<app-task-form-dialog
+  [open]="formOpen()"
+  [task]="selectedTask()"
+  [saving]="saving()"
+  (save)="saveTask($event)"
+  (cancel)="closeForm()"
+/>
+<app-confirm-dialog
+  [open]="deleteTarget() !== null"
+  title="Delete this task?"
+  message="This action cannot be undone. The task will be permanently removed."
+  confirmLabel="Delete task"
+  [destructive]="true"
+  (cancel)="deleteTarget.set(null)"
+  (confirm)="deleteTask()"
+/>
+<app-toast
+  [open]="toast().open"
+  [type]="toast().type"
+  [title]="toast().title"
+  [message]="toast().message"
+  (dismiss)="dismissToast()"
+/>
