@@ -13,10 +13,6 @@ export class TaskStore {
   readonly loading$ = this.loadingSubject.asObservable().pipe(distinctUntilChanged());
   readonly error$ = this.errorSubject.asObservable().pipe(distinctUntilChanged());
   readonly counts$ = this.tasks$.pipe(map((tasks) => this.calculateCounts(tasks)));
-  readonly completedTasks$ = this.tasks$.pipe(
-    map((tasks) => tasks.filter((task) => task.status === 'completed')),
-  );
-
   constructor() {
     this.reload();
   }
