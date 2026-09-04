@@ -15,6 +15,16 @@ class Settings(BaseSettings):
     app_timezone: str = "Asia/Kuala_Lumpur"
     api_v1_prefix: str = "/api/v1"
     cors_origins: str = "http://localhost:4200"
+    database_url: str
+    migration_database_url: str
+
+    @computed_field
+    @property
+    def async_database_url(self) -> str:
+        """Use the asyncpg driver even when a provider supplies a standard URL."""
+        if self.database_url.startswith("postgresql://"):
+            return self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return self.database_url
 
     @computed_field
     @property
