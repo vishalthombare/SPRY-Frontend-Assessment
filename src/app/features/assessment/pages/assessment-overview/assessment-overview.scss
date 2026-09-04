@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+.welcome {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.4rem;
+}
+.kicker {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: #8753cd;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.welcome h1 {
+  margin: 0;
+  color: #28142f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(2.15rem, 3.4vw, 3.25rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.03;
+}
+.welcome p {
+  margin: 0.65rem 0 0;
+  color: #776d7d;
+  font-size: 0.92rem;
+}
+.review-status {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: end;
+  gap: 0.35rem;
+}
+.review-status > span {
+  padding: 0.62rem 0.85rem;
+  border: 1px solid #dbeabe;
+  border-radius: 99px;
+  color: #4f741e;
+  background: #f4fae9;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+.review-status small {
+  color: #807686;
+  font-size: 0.66rem;
+}
+app-assignment-summary,
+app-assessment-summary,
+app-assignment-overview {
+  display: block;
+  margin-bottom: 1rem;
+}
+.section-stack {
+  display: grid;
+  gap: 1rem;
+}
+footer {
+  padding: 1rem 0 0;
+  color: #938a97;
+  font-size: 0.7rem;
+  text-align: center;
+}
+@media (max-width: 650px) {
+  .welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .review-status {
+    justify-items: start;
+  }
+}

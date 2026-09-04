@@ -1,0 +1,128 @@
+@use '../../../../../styles/variables' as v;
+.requirements-card {
+  padding: 1.3rem;
+  border: 1px solid v.$color-border;
+  border-radius: 1.05rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2.8rem rgba(49, 28, 55, 0.04);
+}
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.section-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #8753cd;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+h2 {
+  margin: 0;
+  color: #332039;
+  font-size: 1.12rem;
+}
+header p {
+  margin: 0.35rem 0 0;
+  color: #83798a;
+  font-size: 0.76rem;
+}
+.count {
+  flex: 0 0 auto;
+  padding: 0.36rem 0.55rem;
+  border-radius: 99px;
+  color: #6d6072;
+  background: #f3eff5;
+  font-size: 0.65rem;
+  font-weight: 750;
+}
+.requirements-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid #eee9f0;
+}
+.requirements-grid article {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+.requirements-grid article:nth-child(odd) {
+  border-right: 1px solid #eee9f0;
+}
+.requirements-grid article:nth-child(-n + 2) {
+  border-bottom: 1px solid #eee9f0;
+}
+.requirements-grid article > span {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.68rem;
+  color: v.$color-primary;
+  background: #f2ebf5;
+  font-family: Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+h3 {
+  margin: 0;
+  color: #45344b;
+  font-size: 0.84rem;
+}
+.requirements-grid p {
+  margin: 0.3rem 0 0;
+  color: #867c8b;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+.tags,
+.statuses {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.tags b,
+.statuses b {
+  padding: 0.24rem 0.44rem;
+  border-radius: 99px;
+  font-size: 0.58rem;
+}
+.tags b {
+  border: 1px solid #e7e0ea;
+  color: #716576;
+  background: #faf8fb;
+}
+.statuses b:nth-child(1) {
+  color: #8a5b12;
+  background: #fff4d9;
+}
+.statuses b:nth-child(2) {
+  color: #4e5d9b;
+  background: #edf0ff;
+}
+.statuses b:nth-child(3) {
+  color: #557a22;
+  background: #eff8df;
+}
+@media (max-width: 700px) {
+  header {
+    flex-direction: column;
+  }
+  .requirements-grid {
+    grid-template-columns: 1fr;
+  }
+  .requirements-grid article:nth-child(n) {
+    border-right: 0;
+    border-bottom: 1px solid #eee9f0;
+  }
+  .requirements-grid article:last-child {
+    border-bottom: 0;
+  }
+}

@@ -226,7 +226,7 @@
   position: relative;
   gap: 0.65rem;
 }
-.header-actions button,
+.notification-button,
 .menu-button {
   width: 2.5rem;
   height: 2.5rem;
@@ -237,16 +237,43 @@
   background: #fff;
   cursor: pointer;
 }
-.header-actions button {
+.notification-button {
   display: grid;
+}
+.notification-button svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+.notification-button:hover,
+.notification-button:focus-visible {
+  border-color: #d3c8d8;
+  color: v.$color-primary;
+  background: #faf7fb;
 }
 .menu-button {
   display: none;
 }
 .secure-session {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   color: #5f743d;
   font-size: 0.77rem;
   font-weight: 650;
+}
+.secure-session svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 .profile-menu {
   position: relative;
@@ -254,7 +281,22 @@
 .header-actions .avatar-button {
   display: grid;
   border: 0;
+  border-radius: 50%;
+  color: #32103b;
+  background: linear-gradient(145deg, #dbff9e, #b5e463);
+  box-shadow: 0 0 0 3px rgba(195, 239, 118, 0);
+  font-size: 0.76rem;
+  font-weight: 850;
   cursor: pointer;
+  transition:
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+.header-actions .avatar-button:hover,
+.header-actions .avatar-button:focus-visible,
+.header-actions .avatar-button[aria-expanded='true'] {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(135, 83, 205, 0.18);
 }
 .profile-popover {
   position: absolute;
@@ -333,7 +375,7 @@
   .secure-session {
     display: none;
   }
-  .header-actions > button {
+  .notification-button {
     display: none;
   }
 }

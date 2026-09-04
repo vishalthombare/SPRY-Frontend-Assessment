@@ -1,0 +1,87 @@
+@use '../../../../../styles/variables' as v;
+.review-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 1rem;
+}
+.review-grid section {
+  padding: 1.3rem;
+  border: 1px solid v.$color-border;
+  border-radius: 1.05rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2.8rem rgba(49, 28, 55, 0.04);
+}
+.section-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #8753cd;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+h2 {
+  margin: 0;
+  color: #332039;
+  font-size: 1.12rem;
+}
+.technical-list {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.technical-list > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.72rem;
+  border-top: 1px solid #eee9f0;
+  color: #8753cd;
+}
+.technical-list span {
+  display: grid;
+  gap: 0.12rem;
+}
+.technical-list strong {
+  color: #4b3b50;
+  font-size: 0.73rem;
+}
+.technical-list small {
+  color: #93899a;
+  font-size: 0.64rem;
+}
+ul {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  list-style: none;
+}
+li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: #695d6e;
+  font-size: 0.72rem;
+}
+li span {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #527c1d;
+  background: #eff8df;
+  font-weight: 800;
+}
+@media (max-width: 900px) {
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .technical-list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -8,47 +8,89 @@
       (click)="$event.stopPropagation()"
     >
       <header class="dialog-header">
-        <div>
-          <span class="eyebrow">{{ task === null ? 'New task' : 'Edit task' }}</span>
-          <h2 [id]="titleId">{{ task === null ? 'Create a task' : 'Update task' }}</h2>
+        <div class="heading-group">
+          <span class="heading-icon" aria-hidden="true">{{ task === null ? '+' : '✎' }}</span>
+          <div>
+            <span class="eyebrow">{{ task === null ? 'New task' : 'Edit task' }}</span>
+            <h2 [id]="titleId">{{ task === null ? 'Create a task' : 'Update task' }}</h2>
+            <p>
+              {{
+                task === null
+                  ? 'Add a clear, actionable item to the assessment.'
+                  : 'Refine the task details or update its workflow status.'
+              }}
+            </p>
+          </div>
         </div>
-        <button class="close" type="button" aria-label="Close" (click)="cancel.emit()">×</button>
+        <button class="close" type="button" aria-label="Close task dialog" (click)="cancel.emit()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
       </header>
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="dialog-body form-grid">
           <label class="field field--wide"
-            >Title<input formControlName="title" placeholder="What needs to be done?" />
+            ><span class="field-heading">Title <small>Required</small></span
+            ><input
+              formControlName="title"
+              placeholder="What needs to be done?"
+              [class.invalid]="form.controls.title.touched && form.controls.title.invalid"
+            />
             @if (form.controls.title.touched && form.controls.title.invalid) {
               <small>Enter a title containing at least one visible character.</small>
             }
           </label>
           <label class="field field--wide"
-            >Description<textarea
+            ><span class="field-heading">Description <small>Optional</small></span
+            ><textarea
               formControlName="description"
               rows="3"
               placeholder="Add useful context"
             ></textarea>
+            <span class="character-count">{{ form.controls.description.value.length }}/500</span>
           </label>
           <label class="field"
-            >Due date<input type="date" formControlName="dueDate" />
+            ><span class="field-heading">Due date <small>Required</small></span
+            ><span class="date-control"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4M8 3v4M3 10h18"></path></svg
+              ><input
+                type="date"
+                formControlName="dueDate"
+                [class.invalid]="form.controls.dueDate.touched && form.controls.dueDate.invalid"
+            /></span>
             @if (form.controls.dueDate.touched && form.controls.dueDate.invalid) {
               <small>A due date is required.</small>
             }
           </label>
-          <label class="field"
-            >Status<select formControlName="status">
-              <option value="pending">Pending</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-            </select></label
-          >
+          <fieldset class="status-field">
+            <legend>Status</legend>
+            <div class="status-options">
+              <label class="status-option pending"
+                ><input type="radio" formControlName="status" value="pending" /><span
+                  ><i></i>Pending</span
+                ></label
+              ><label class="status-option progress"
+                ><input type="radio" formControlName="status" value="in-progress" /><span
+                  ><i></i>In Progress</span
+                ></label
+              ><label class="status-option completed"
+                ><input type="radio" formControlName="status" value="completed" /><span
+                  ><i>✓</i>Completed</span
+                ></label
+              >
+            </div>
+          </fieldset>
         </div>
         <footer class="dialog-actions">
-          <app-button variant="secondary" [disabled]="saving" (pressed)="cancel.emit()"
-            >Cancel</app-button
-          ><app-button type="submit" [loading]="saving">{{
-            task === null ? 'Create task' : 'Save changes'
-          }}</app-button>
+          <span class="save-note">♢ Changes are stored locally</span>
+          <div>
+            <app-button variant="secondary" [disabled]="saving" (pressed)="cancel.emit()"
+              >Cancel</app-button
+            ><app-button type="submit" [loading]="saving">{{
+              task === null ? 'Create task' : 'Save changes'
+            }}</app-button>
+          </div>
         </footer>
       </form>
     </section>

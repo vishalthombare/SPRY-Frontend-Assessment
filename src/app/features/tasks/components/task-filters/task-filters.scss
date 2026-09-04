@@ -1,45 +1,110 @@
 @use '../../../../../styles/variables' as v;
 .filters {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(16rem, 1fr) auto auto auto;
+  align-items: center;
   gap: 0.7rem;
-  padding: 0.85rem 1.2rem;
+  padding: 1rem 1.2rem;
   border-block: 1px solid v.$color-border;
   background: #fcfbfd;
 }
 .search {
   position: relative;
-  flex: 1;
   min-width: 12rem;
 }
-.search span {
+.search svg {
   position: absolute;
-  left: 0.85rem;
+  left: 0.9rem;
   top: 50%;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 1.8;
   color: v.$color-muted;
   transform: translateY(-50%);
+  pointer-events: none;
 }
 .search input {
-  padding-left: 2.3rem;
+  padding-left: 2.55rem;
 }
-input,
-select {
+input {
   width: 100%;
-  height: 2.65rem;
-  padding: 0 0.85rem;
+  height: 2.9rem;
+  padding-right: 0.9rem;
   border: 1px solid v.$color-border;
-  border-radius: 0.7rem;
+  border-radius: 0.78rem;
   color: v.$color-text;
   background: #fff;
   outline: none;
+  font-size: 0.8rem;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
 }
-select {
-  width: auto;
-  min-width: 10rem;
+.select-control {
+  position: relative;
+  display: block;
+  color: #756a7a;
+}
+.select-control select {
+  width: 100%;
+  height: 2.9rem;
+  appearance: none;
+  padding: 0 2.35rem 0 2.35rem;
+  border: 1px solid v.$color-border;
+  border-radius: 0.78rem;
+  outline: none;
+  color: #3e3044;
+  background: #fff;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+.status-select {
+  width: 11.5rem;
+}
+.sort-select {
+  width: 13rem;
+}
+.select-control svg {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.leading-icon {
+  left: 0.82rem;
+}
+.select-control .chevron {
+  right: 0.8rem;
+  width: 0.9rem;
+  height: 0.9rem;
 }
 input:focus,
-select:focus {
+.select-control:focus-within select {
   border-color: #8753cd;
   box-shadow: 0 0 0 3px rgba(135, 83, 205, 0.1);
+  background: #fff;
+}
+.select-control:hover select,
+input:hover {
+  border-color: #cec3d3;
 }
 .clear {
   border: 0;
@@ -49,19 +114,38 @@ select:focus {
   font-weight: 750;
   cursor: pointer;
   white-space: nowrap;
+  border-radius: 0.55rem;
+  padding: 0.5rem 0.6rem;
+}
+.clear:hover,
+.clear:focus-visible {
+  outline: none;
+  background: #f2ebf5;
 }
 @media (max-width: 720px) {
   .filters {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr 1fr;
   }
   .search {
-    flex-basis: 100%;
+    grid-column: 1 / -1;
   }
-  select {
-    flex: 1;
+  .status-select,
+  .sort-select {
+    width: 100%;
   }
   .clear {
+    grid-column: 1 / -1;
     width: 100%;
     text-align: left;
+  }
+}
+@media (max-width: 480px) {
+  .filters {
+    grid-template-columns: 1fr;
+    padding-inline: 0.9rem;
+  }
+  .search,
+  .clear {
+    grid-column: auto;
   }
 }

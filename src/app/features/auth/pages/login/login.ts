@@ -25,7 +25,7 @@ export class Login {
     }
     this.auth.login();
     void this.router.navigateByUrl(
-      this.route.snapshot.queryParamMap.get('returnUrl') ?? '/dashboard',
+      this.route.snapshot.queryParamMap.get('returnUrl') ?? '/assessment',
     );
   }
 }

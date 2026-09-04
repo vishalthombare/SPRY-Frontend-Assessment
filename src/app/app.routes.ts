@@ -12,21 +12,18 @@ export const routes: Routes = [
     loadComponent: () => import('./layout/app-layout').then((m) => m.AppLayout),
     children: [
       {
-        path: 'dashboard',
+        path: 'assessment',
         loadChildren: () =>
-          import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
-      },
-      {
-        path: 'assignment',
-        loadChildren: () =>
-          import('./features/assignments/assignments.routes').then((m) => m.ASSIGNMENT_ROUTES),
+          import('./features/assessment/assessment.routes').then((m) => m.ASSESSMENT_ROUTES),
       },
       {
         path: 'tasks',
         loadChildren: () => import('./features/tasks/tasks.routes').then((m) => m.TASK_ROUTES),
       },
-      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      { path: 'dashboard', pathMatch: 'full', redirectTo: 'assessment' },
+      { path: 'assignment', pathMatch: 'full', redirectTo: 'assessment' },
+      { path: '', pathMatch: 'full', redirectTo: 'assessment' },
     ],
   },
-  { path: '**', redirectTo: 'dashboard' },
+  { path: '**', redirectTo: 'assessment' },
 ];

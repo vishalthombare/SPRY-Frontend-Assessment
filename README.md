@@ -14,10 +14,11 @@ Open `http://localhost:4200`. Any valid email and password of six or more charac
 ## Routes
 
 - `/login`
-- `/dashboard`
-- `/assignment`
+- `/assessment`
 - `/tasks`
 - `/tasks/completed`
+
+Legacy `/dashboard` and `/assignment` URLs redirect to `/assessment`.
 
 ## Reusable UI
 

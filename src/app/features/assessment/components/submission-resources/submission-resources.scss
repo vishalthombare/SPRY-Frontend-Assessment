@@ -1,0 +1,104 @@
+@use '../../../../../styles/variables' as v;
+.resources {
+  padding: 1.3rem;
+  border: 1px solid v.$color-border;
+  border-radius: 1.05rem;
+  background: #fff;
+  box-shadow: 0 0.8rem 2.8rem rgba(49, 28, 55, 0.04);
+}
+header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.section-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #8753cd;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+h2 {
+  margin: 0;
+  color: #332039;
+  font-size: 1.12rem;
+}
+header p {
+  margin: 0.35rem 0 0;
+  color: #83798a;
+  font-size: 0.76rem;
+}
+header > span {
+  color: #68763e;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+.resource-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.resource-grid article {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border: 1px solid #ece6ee;
+  border-radius: 0.85rem;
+  background: #fdfcfd;
+}
+.icon {
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.68rem;
+  color: v.$color-primary;
+  background: #efe6f2;
+}
+.resource-grid small {
+  color: #648235;
+  font-size: 0.58rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+.resource-grid h3 {
+  margin: 0.28rem 0 0;
+  color: #3b2c40;
+  font-size: 0.8rem;
+}
+.resource-grid p {
+  margin: 0.25rem 0 0;
+  color: #8b818f;
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+.resource-grid button {
+  grid-column: 1/-1;
+  min-height: 2.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.65rem;
+  border: 1px solid #e7dfea;
+  border-radius: 0.58rem;
+  color: #58495e;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .resource-grid {
+    grid-template-columns: 1fr;
+  }
+}

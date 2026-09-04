@@ -1,24 +1,42 @@
 <form class="filters" [formGroup]="form">
-  <label class="search"
-    ><span aria-hidden="true">⌕</span
-    ><input
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5"></circle>
+      <path d="m16 16 4 4"></path>
+    </svg>
+    <input
       type="search"
       formControlName="query"
       placeholder="Search by title or description"
       aria-label="Search tasks"
-  /></label>
+    />
+  </label>
   @if (!completedOnly) {
-    <select formControlName="status" aria-label="Filter by status">
-      <option value="all">All statuses</option>
-      <option value="pending">Pending</option>
-      <option value="in-progress">In Progress</option>
-      <option value="completed">Completed</option>
-    </select>
+    <label class="select-control status-select">
+      <svg class="leading-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6h16M7 12h10m-7 6h4"></path>
+      </svg>
+      <select formControlName="status" aria-label="Filter by status">
+        <option value="all">All statuses</option>
+        <option value="pending">Pending</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+      <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m7 9 5 5 5-5"></path>
+      </svg>
+    </label>
   }
-  <select formControlName="sort" aria-label="Sort by due date">
-    <option value="asc">Due date earliest</option>
-    <option value="desc">Due date latest</option>
-  </select>
+  <label class="select-control sort-select">
+    <svg class="leading-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M8 6v12m0 0-3-3m3 3 3-3M14 7h5m-5 5h4m-4 5h3"></path>
+    </svg>
+    <select formControlName="sort" aria-label="Sort by due date">
+      <option value="asc">Due date: earliest</option>
+      <option value="desc">Due date: latest</option>
+    </select>
+    <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9 5 5 5-5"></path></svg>
+  </label>
   @if (hasActiveFilters) {
     <button class="clear" type="button" (click)="clear()">Clear filters</button>
   }

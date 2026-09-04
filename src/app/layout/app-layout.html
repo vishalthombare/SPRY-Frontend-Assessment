@@ -2,7 +2,7 @@
   <button class="sidebar-backdrop" aria-label="Close navigation" (click)="closeMenu()"></button>
   <aside class="sidebar" aria-label="Assessment navigation">
     <div class="sidebar-brand">
-      <a routerLink="/dashboard" (click)="closeMenu()"
+      <a routerLink="/assessment" (click)="closeMenu()"
         ><span class="wordmark">SPRY</span><span class="brand-label">Assessment</span></a
       ><button
         class="close-button"
@@ -15,10 +15,8 @@
     </div>
     <nav class="nav-list">
       <span class="nav-caption">Workspace</span
-      ><a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()"
-        ><b>⌂</b>Overview</a
-      ><a routerLink="/assignment" routerLinkActive="active" (click)="closeMenu()"
-        ><b>□</b>Assignment</a
+      ><a routerLink="/assessment" routerLinkActive="active" (click)="closeMenu()"
+        ><b>⌂</b>Assessment Overview</a
       ><a routerLink="/tasks" routerLinkActive="active" (click)="closeMenu()"
         ><b>☷</b>Task Management</a
       >
@@ -49,22 +47,36 @@
         <div><span>Candidate portal</span><strong>Frontend assessment</strong></div>
       </div>
       <div class="header-actions">
-        <span class="secure-session">♢ Secure session</span
-        ><button type="button" aria-label="Notifications">♧</button>
+        <span class="secure-session">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 3.25 19 6v5.2c0 4.45-2.8 7.78-7 9.55-4.2-1.77-7-5.1-7-9.55V6l7-2.75Z"
+            ></path>
+            <path d="m9.25 12 1.8 1.8 3.8-4.05"></path>
+          </svg>
+          Secure session
+        </span>
+        <button class="notification-button" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+            <path d="M10 21h4"></path>
+          </svg>
+        </button>
         <div class="profile-menu">
           <button
             class="avatar avatar-button"
             type="button"
             aria-label="Open profile menu"
+            aria-haspopup="menu"
             [attr.aria-expanded]="profileOpen()"
             (click)="profileOpen.set(!profileOpen())"
           >
             VT
           </button>
           @if (profileOpen()) {
-            <div class="profile-popover">
+            <div class="profile-popover" role="menu">
               <div><strong>Vishal Thombare</strong><span>Candidate</span></div>
-              <button type="button" (click)="logout()">
+              <button type="button" role="menuitem" (click)="logout()">
                 <span aria-hidden="true">↪</span> Sign out
               </button>
             </div>
