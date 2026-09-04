@@ -1,8 +1,8 @@
 @use '../../../../../styles/variables' as v;
 .task-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.9rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
   align-items: center;
   padding: 1rem 1.2rem;
   border-bottom: 1px solid v.$color-border;
@@ -13,21 +13,6 @@
 }
 .task-row:last-child {
   border-bottom: 0;
-}
-.status-check {
-  width: 1.6rem;
-  height: 1.6rem;
-  display: grid;
-  place-items: center;
-  border: 1px solid #d8d0dc;
-  border-radius: 0.48rem;
-  color: #527c1d;
-  background: #fff;
-  cursor: pointer;
-}
-.status-check.checked {
-  border-color: #cde7a5;
-  background: #eff8df;
 }
 .task-copy {
   min-width: 0;
@@ -54,8 +39,7 @@
   font-size: 0.67rem;
 }
 .task-copy small svg,
-.actions svg,
-.status-check svg {
+.actions svg {
   width: 0.9rem;
   height: 0.9rem;
   fill: none;
@@ -106,6 +90,11 @@
   background: #f9f5fa;
   transform: translateY(-1px);
 }
+.actions .delete:hover {
+  border-color: #efcaca;
+  color: #b42335;
+  background: #fff5f5;
+}
 .actions .complete,
 .actions .restore {
   display: inline-flex;
@@ -119,10 +108,10 @@
 }
 @media (max-width: 650px) {
   .task-row {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
   .actions {
-    grid-column: 2;
     justify-content: flex-start;
   }
   .task-copy p {
