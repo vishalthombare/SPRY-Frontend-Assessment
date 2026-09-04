@@ -19,6 +19,7 @@ interface CalendarDay {
   readonly active: boolean;
 }
 
+/** Accessible date picker that provides a consistent calendar across supported browsers. */
 @Component({
   selector: 'app-date-picker',
   templateUrl: './date-picker.html',
@@ -74,6 +75,7 @@ export class DatePickerComponent {
       const initial = this.selectedValue() ? this.parseDate(this.selectedValue()) : new Date();
       this.visibleMonth.set(this.startOfMonth(initial));
       this.activeValue.set(this.formatDate(initial));
+      // Wait for Angular to render the calendar before moving keyboard focus.
       requestAnimationFrame(() => this.focusActiveDate());
     }
     this.open.update((value) => !value);
@@ -90,6 +92,7 @@ export class DatePickerComponent {
   }
 
   handleKeydown(event: KeyboardEvent): void {
+    // Follow the WAI-ARIA calendar grid conventions for day and month navigation.
     const offsets: Record<string, number> = {
       ArrowLeft: -1,
       ArrowRight: 1,
@@ -139,6 +142,7 @@ export class DatePickerComponent {
     const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
     const gridStart = new Date(month.getFullYear(), month.getMonth(), 1 - firstDay.getDay());
 
+    // Six complete weeks keep the popover height stable between months.
     return Array.from({ length: 42 }, (_, index) => {
       const date = new Date(gridStart);
       date.setDate(gridStart.getDate() + index);
@@ -180,11 +184,13 @@ export class DatePickerComponent {
   }
 
   private parseDate(value: string): Date {
+    // Parse components locally to avoid UTC shifting the selected calendar day.
     const [year, month, day] = value.split('-').map(Number);
     return new Date(year, month - 1, day);
   }
 
   private formatDate(date: Date): string {
+    // Store local calendar dates as sortable, API-friendly YYYY-MM-DD strings.
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');

@@ -20,6 +20,7 @@ import { ButtonComponent } from '../../../../shared/components/button/button';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { Task, TaskFormValue, TaskStatus } from '../../models/task.model';
 
+/** Reusable reactive form for both task creation and task editing. */
 @Component({
   selector: 'app-task-form-dialog',
   imports: [ReactiveFormsModule, ButtonComponent, DatePickerComponent],
@@ -55,6 +56,7 @@ export class TaskFormDialogComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Reset whenever the dialog target changes so stale add/edit values never leak across modes.
     if (changes['task'] || changes['open']) {
       const value = this.task;
       this.form.reset(
@@ -96,6 +98,7 @@ export class TaskFormDialogComponent implements OnChanges {
 }
 
 function minimumDate(minimum: string): ValidatorFn {
+  // ISO local dates compare chronologically as strings and avoid timezone conversion.
   return (control: AbstractControl<string>): ValidationErrors | null =>
     !control.value || control.value >= minimum ? null : { minimumDate: true };
 }

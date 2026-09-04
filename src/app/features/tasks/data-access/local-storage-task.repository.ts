@@ -70,8 +70,10 @@ export const INITIAL_TASKS: Task[] = [
   },
 ];
 
+/** Browser repository that persists the task collection between page refreshes. */
 @Injectable()
 export class LocalStorageTaskRepository implements TaskRepository {
+  /** Loads saved tasks or returns independent copies of the assessment seed data. */
   load(): Task[] {
     const value = localStorage.getItem(TASK_STORAGE_KEY);
     if (!value) return INITIAL_TASKS.map((task) => ({ ...task }));
@@ -81,11 +83,14 @@ export class LocalStorageTaskRepository implements TaskRepository {
       const savedTask = task as Partial<Task>;
       return {
         ...savedTask,
+        // Backfill records saved before immutable creation timestamps were introduced.
         createdAt:
           typeof savedTask.createdAt === 'string' ? savedTask.createdAt : new Date().toISOString(),
       } as Task;
     });
   }
+
+  /** Replaces the persisted snapshot with the latest immutable collection. */
   save(tasks: readonly Task[]): void {
     localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
   }

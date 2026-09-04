@@ -14,6 +14,7 @@ import { TaskStore } from '../../data-access/task.store';
 import { filterAndSortTasks } from '../../data-access/task.selectors';
 import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
 
+/** Coordinates route state, task selectors, dialogs, actions, and transient feedback. */
 @Component({
   selector: 'app-task-management-page',
   imports: [
@@ -45,6 +46,7 @@ export class TaskManagementPageComponent {
     this.route.data.pipe(map((data) => data['completedOnly'] === true)),
     { initialValue: false },
   );
+  // A route flag lets the global header open the existing form without duplicating it.
   private readonly createRequested = toSignal(
     this.route.queryParamMap.pipe(map((params) => params.get('create') === 'true')),
     { initialValue: false },
@@ -55,6 +57,7 @@ export class TaskManagementPageComponent {
   readonly loading = toSignal(this.store.loading$, { initialValue: true });
   readonly error = toSignal(this.store.error$, { initialValue: null });
   readonly visibleTasks = toSignal(
+    // Both routed tabs share this page; route data changes only the derived collection.
     combineLatest([this.store.tasks$, this.filterSubject, this.route.data]).pipe(
       map(([tasks, filters, data]) => {
         return filterAndSortTasks(tasks, filters, data['completedOnly'] === true);
@@ -75,6 +78,7 @@ export class TaskManagementPageComponent {
   });
 
   constructor() {
+    // React to navigation from the global Create task action, including same-page navigation.
     effect(() => {
       if (this.createRequested()) this.addTask();
     });
@@ -153,6 +157,7 @@ export class TaskManagementPageComponent {
   private clearCreateRequest(): void {
     if (!this.createRequested()) return;
 
+    // Replace history so closing the dialog cannot reopen it through browser Back navigation.
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { create: null },

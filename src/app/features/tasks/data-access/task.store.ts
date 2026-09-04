@@ -3,6 +3,10 @@ import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
 import { Task, TaskCounts, TaskFormValue, TaskStatus } from '../models/task.model';
 import { TASK_REPOSITORY } from './task.repository';
 
+/**
+ * Owns task state for the routed task feature.
+ * BehaviorSubjects keep state reactive while the repository isolates persistence details.
+ */
 @Injectable()
 export class TaskStore {
   private readonly repository = inject(TASK_REPOSITORY);
@@ -13,10 +17,12 @@ export class TaskStore {
   readonly loading$ = this.loadingSubject.asObservable().pipe(distinctUntilChanged());
   readonly error$ = this.errorSubject.asObservable().pipe(distinctUntilChanged());
   readonly counts$ = this.tasks$.pipe(map((tasks) => this.calculateCounts(tasks)));
+
   constructor() {
     this.reload();
   }
 
+  /** Reloads the collection and exposes loading or persistence failures to the UI. */
   reload(): void {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
@@ -29,6 +35,8 @@ export class TaskStore {
       this.loadingSubject.next(false);
     }
   }
+
+  /** Adds a normalized task without mutating the existing collection. */
   add(value: TaskFormValue): boolean {
     return this.commit([
       {
@@ -41,6 +49,8 @@ export class TaskStore {
       ...this.tasksSubject.value,
     ]);
   }
+
+  /** Updates only the matching task and preserves immutable creation metadata. */
   update(id: string, value: TaskFormValue): boolean {
     return this.commit(
       this.tasksSubject.value.map((task) =>
@@ -50,15 +60,20 @@ export class TaskStore {
       ),
     );
   }
+
+  /** Removes a task by identifier using an immutable filter operation. */
   remove(id: string): boolean {
     return this.commit(this.tasksSubject.value.filter((task) => task.id !== id));
   }
+
+  /** Applies workflow transitions used by Complete and Restore actions. */
   setStatus(id: string, status: TaskStatus): boolean {
     return this.commit(
       this.tasksSubject.value.map((task) => (task.id === id ? { ...task, status } : task)),
     );
   }
 
+  /** Persists first so in-memory state changes only after a successful save. */
   private commit(tasks: readonly Task[]): boolean {
     this.errorSubject.next(null);
     try {
@@ -70,6 +85,8 @@ export class TaskStore {
       return false;
     }
   }
+
+  /** Derives all summary values from the same collection in one pass. */
   private calculateCounts(tasks: readonly Task[]): TaskCounts {
     return tasks.reduce<TaskCounts>(
       (counts, task) => ({

@@ -1,5 +1,9 @@
 import { Task, TaskFilterValue } from '../models/task.model';
 
+/**
+ * Produces the route-aware task view without mutating store state.
+ * ISO date strings can be sorted lexically because they use YYYY-MM-DD format.
+ */
 export function filterAndSortTasks(
   tasks: readonly Task[],
   filters: TaskFilterValue,
