@@ -16,7 +16,6 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     cors_origins: str = "http://localhost:4200"
     database_url: str
-    migration_database_url: str
 
     @computed_field
     @property
@@ -25,6 +24,16 @@ class Settings(BaseSettings):
         if self.database_url.startswith("postgresql://"):
             return self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
         return self.database_url
+
+    @computed_field
+    @property
+    def sync_database_url(self) -> str:
+        """Use psycopg for synchronous Alembic migration commands."""
+        url = self.database_url
+        for scheme in ("postgresql+asyncpg://", "postgresql://"):
+            if url.startswith(scheme):
+                return url.replace(scheme, "postgresql+psycopg://", 1)
+        return url
 
     @computed_field
     @property
