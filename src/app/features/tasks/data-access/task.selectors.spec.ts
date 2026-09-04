@@ -8,6 +8,7 @@ const tasks: Task[] = [
     description: 'Alpha',
     status: 'pending',
     dueDate: '2026-09-09',
+    createdAt: '2026-09-01T00:00:00.000Z',
   },
   {
     id: '2',
@@ -15,6 +16,7 @@ const tasks: Task[] = [
     description: 'Beta match',
     status: 'in-progress',
     dueDate: '2026-09-02',
+    createdAt: '2026-09-01T00:00:00.000Z',
   },
   {
     id: '3',
@@ -22,6 +24,7 @@ const tasks: Task[] = [
     description: 'Gamma',
     status: 'completed',
     dueDate: '2026-09-01',
+    createdAt: '2026-09-01T00:00:00.000Z',
   },
 ];
 

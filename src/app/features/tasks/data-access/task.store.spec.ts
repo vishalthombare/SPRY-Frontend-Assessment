@@ -17,9 +17,30 @@ class MemoryRepository implements TaskRepository {
 }
 
 const seed: Task[] = [
-  { id: '1', title: 'Pending', description: '', status: 'pending', dueDate: '2026-09-03' },
-  { id: '2', title: 'Active', description: '', status: 'in-progress', dueDate: '2026-09-02' },
-  { id: '3', title: 'Done', description: '', status: 'completed', dueDate: '2026-09-01' },
+  {
+    id: '1',
+    title: 'Pending',
+    description: '',
+    status: 'pending',
+    dueDate: '2026-09-03',
+    createdAt: '2026-09-01T00:00:00.000Z',
+  },
+  {
+    id: '2',
+    title: 'Active',
+    description: '',
+    status: 'in-progress',
+    dueDate: '2026-09-02',
+    createdAt: '2026-09-01T00:00:00.000Z',
+  },
+  {
+    id: '3',
+    title: 'Done',
+    description: '',
+    status: 'completed',
+    dueDate: '2026-09-01',
+    createdAt: '2026-09-01T00:00:00.000Z',
+  },
 ];
 const value: TaskFormValue = {
   title: 'New task',

@@ -6,6 +6,7 @@ export interface Task {
   description: string;
   status: TaskStatus;
   dueDate: string;
+  createdAt: string;
 }
 export interface TaskFormValue {
   title: string;

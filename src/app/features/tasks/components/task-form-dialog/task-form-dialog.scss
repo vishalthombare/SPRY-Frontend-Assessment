@@ -82,7 +82,7 @@
 }
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.15rem;
   padding: 1.45rem 1.5rem;
 }
@@ -99,7 +99,8 @@
   grid-column: 1 / -1;
 }
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 0.78rem 0.85rem;
   border: 1px solid v.$color-border;
@@ -107,7 +108,6 @@ textarea {
   color: v.$color-text;
   background: #fff;
   outline: none;
-  resize: vertical;
   font-size: 0.82rem;
   font-weight: 500;
   transition:
@@ -119,9 +119,11 @@ textarea {
   min-height: 6.5rem;
   padding-bottom: 1.5rem;
   line-height: 1.5;
+  resize: vertical;
 }
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
   border-color: #8753cd;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(135, 83, 205, 0.11);
@@ -148,112 +150,120 @@ textarea:focus {
   font-size: 0.6rem;
   font-weight: 500;
 }
-.date-control {
-  position: relative;
-  display: block;
-}
-.date-control svg {
-  position: absolute;
-  left: 0.8rem;
-  top: 50%;
-  z-index: 1;
-  width: 1rem;
-  height: 1rem;
-  fill: none;
-  stroke: #84788a;
-  stroke-linecap: round;
-  stroke-width: 1.7;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-.date-control input {
-  padding-left: 2.35rem;
-}
 .invalid {
   border-color: #c93445;
 }
 .status-field {
   min-width: 0;
-  margin: 0;
-  padding: 0;
-  border: 0;
 }
-.status-field legend {
-  margin-bottom: 0.45rem;
-  color: v.$color-text;
-  font-size: 0.82rem;
-  font-weight: 700;
+.status-control {
+  position: relative;
+  display: block;
 }
-.status-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.4rem;
-}
-.status-option {
-  min-width: 0;
+.status-control select {
+  min-height: 2.9rem;
+  appearance: none;
+  padding: 0.78rem 2.5rem 0.78rem 2.35rem;
   cursor: pointer;
 }
-.status-option input {
+.status-control > svg {
   position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
+  top: 50%;
+  right: 0.85rem;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: #786c7e;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  transform: translateY(-50%);
   pointer-events: none;
 }
-.status-option span {
-  min-height: 2.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.38rem;
-  padding: 0.55rem 0.45rem;
-  border: 1px solid v.$color-border;
-  border-radius: 0.7rem;
-  color: #746879;
-  background: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  transition:
-    border-color 0.16s ease,
-    box-shadow 0.16s ease,
-    background 0.16s ease;
-  white-space: nowrap;
-}
-.status-option i {
-  width: 0.75rem;
-  height: 0.75rem;
-  display: grid;
-  place-items: center;
-  border: 1.5px solid currentColor;
+.status-dot {
+  position: absolute;
+  top: 50%;
+  left: 0.9rem;
+  z-index: 1;
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid #c18a2a;
   border-radius: 50%;
-  font-size: 0.52rem;
-  font-style: normal;
+  background: #fff4d9;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
-.status-option:hover span {
+.status-dot.progress {
+  border-color: #6670b6;
+  background: #e9ebff;
+}
+.status-dot.completed {
+  border-color: #66942d;
+  background: #e6f4d2;
+}
+.status-control:hover select {
   border-color: #cec3d3;
   background: #fcfafc;
 }
-.status-option input:focus-visible + span {
-  outline: 3px solid rgba(135, 83, 205, 0.14);
-  outline-offset: 1px;
+.status-control:focus-within select {
+  border-color: #8753cd;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(135, 83, 205, 0.11);
 }
-.status-option.pending input:checked + span {
-  border-color: #ecd398;
-  color: #83550f;
-  background: #fff7e3;
-  box-shadow: 0 0 0 2px rgba(236, 211, 152, 0.18);
+.status-control {
+  min-height: 2.9rem;
 }
-.status-option.progress input:checked + span {
-  border-color: #c9cdf0;
-  color: #4e5d9b;
-  background: #f1f2ff;
-  box-shadow: 0 0 0 2px rgba(201, 205, 240, 0.2);
+.status-control select {
+  font-weight: 600;
+  line-height: 1.2;
 }
-.status-option.completed input:checked + span {
-  border-color: #cde7a5;
-  color: #527c1d;
-  background: #f1f9e5;
-  box-shadow: 0 0 0 2px rgba(205, 231, 165, 0.2);
+.status-control option {
+  color: v.$color-text;
+  background: #fff;
+}
+.readonly-control {
+  position: relative;
+  display: block;
+}
+.readonly-control svg {
+  position: absolute;
+  top: 50%;
+  left: 0.8rem;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: #8b808f;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.readonly-control input {
+  min-height: 2.9rem;
+  padding: 0.78rem 3.4rem 0.78rem 2.35rem;
+  color: #6f6474;
+  background: #f7f4f8;
+  font-weight: 600;
+  cursor: default;
+}
+.readonly-control > span {
+  position: absolute;
+  top: 50%;
+  right: 0.65rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 0.35rem;
+  color: #887b8d;
+  background: #ebe5ee;
+  font-size: 0.52rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.status-control:focus-within > svg {
+  stroke: #6f35a8;
 }
 .dialog-actions {
   align-items: center;

@@ -40,6 +40,7 @@ export class TaskStore {
         title: value.title.trim(),
         description: value.description.trim(),
         id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
       },
       ...this.tasksSubject.value,
     ]);

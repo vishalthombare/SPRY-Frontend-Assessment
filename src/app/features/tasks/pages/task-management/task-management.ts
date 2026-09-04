@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner';
@@ -33,6 +33,7 @@ import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
 })
 export class TaskManagementPageComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly store = inject(TaskStore);
   private readonly filterSubject = new BehaviorSubject<TaskFilterValue>({
     query: '',
@@ -42,6 +43,10 @@ export class TaskManagementPageComponent {
 
   readonly completedView = toSignal(
     this.route.data.pipe(map((data) => data['completedOnly'] === true)),
+    { initialValue: false },
+  );
+  private readonly createRequested = toSignal(
+    this.route.queryParamMap.pipe(map((params) => params.get('create') === 'true')),
     { initialValue: false },
   );
   readonly counts = toSignal(this.store.counts$, {
@@ -69,6 +74,12 @@ export class TaskManagementPageComponent {
     message: '',
   });
 
+  constructor() {
+    effect(() => {
+      if (this.createRequested()) this.addTask();
+    });
+  }
+
   setFilters(filters: TaskFilterValue): void {
     this.filterSubject.next(filters);
   }
@@ -81,7 +92,10 @@ export class TaskManagementPageComponent {
     this.formOpen.set(true);
   }
   closeForm(): void {
-    if (!this.saving()) this.formOpen.set(false);
+    if (!this.saving()) {
+      this.formOpen.set(false);
+      this.clearCreateRequest();
+    }
   }
   saveTask(value: TaskFormValue): void {
     if (this.saving()) return;
@@ -91,6 +105,7 @@ export class TaskManagementPageComponent {
     this.saving.set(false);
     if (saved) {
       this.formOpen.set(false);
+      this.clearCreateRequest();
       this.showToast(
         selected ? 'Task updated' : 'Task added',
         'success',
@@ -133,5 +148,16 @@ export class TaskManagementPageComponent {
   }
   private showToast(title: string, type: ToastType, message: string): void {
     this.toast.set({ open: true, type, title, message });
+  }
+
+  private clearCreateRequest(): void {
+    if (!this.createRequested()) return;
+
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { create: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 }

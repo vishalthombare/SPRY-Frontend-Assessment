@@ -6,7 +6,14 @@ describe('LocalStorageTaskRepository', () => {
   beforeEach(() => localStorage.clear());
   it('persists tasks across repository instances', () => {
     const tasks: Task[] = [
-      { id: 'x', title: 'Persisted', description: '', status: 'pending', dueDate: '2026-09-03' },
+      {
+        id: 'x',
+        title: 'Persisted',
+        description: '',
+        status: 'pending',
+        dueDate: '2026-09-03',
+        createdAt: '2026-09-01T00:00:00.000Z',
+      },
     ];
     repository.save(tasks);
     expect(new LocalStorageTaskRepository().load()).toEqual(tasks);

@@ -47,6 +47,17 @@
         <div><span>Candidate portal</span><strong>Frontend assessment</strong></div>
       </div>
       <div class="header-actions">
+        <a
+          class="create-task-button"
+          routerLink="/tasks"
+          [queryParams]="{ create: 'true' }"
+          aria-label="Create a new task"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          <span>Create task</span>
+        </a>
         <span class="secure-session">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path
@@ -62,7 +73,7 @@
             <path d="M10 21h4"></path>
           </svg>
         </button>
-        <div class="profile-menu">
+        <div #profileMenu class="profile-menu">
           <button
             class="avatar avatar-button"
             type="button"

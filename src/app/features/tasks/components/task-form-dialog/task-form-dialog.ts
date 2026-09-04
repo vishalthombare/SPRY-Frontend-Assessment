@@ -7,13 +7,22 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/components/button/button';
+import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { Task, TaskFormValue, TaskStatus } from '../../models/task.model';
 
 @Component({
   selector: 'app-task-form-dialog',
-  imports: [ReactiveFormsModule, ButtonComponent],
+  imports: [ReactiveFormsModule, ButtonComponent, DatePickerComponent],
   templateUrl: './task-form-dialog.html',
   styleUrl: './task-form-dialog.scss',
 })
@@ -24,16 +33,26 @@ export class TaskFormDialogComponent implements OnChanges {
   @Output() readonly save = new EventEmitter<TaskFormValue>();
   @Output() readonly cancel = new EventEmitter<void>();
 
+  readonly today = this.toLocalDate(new Date());
   readonly form = inject(FormBuilder).nonNullable.group({
     title: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
     description: ['', Validators.maxLength(500)],
-    dueDate: ['', Validators.required],
+    dueDate: ['', [Validators.required, minimumDate(this.today)]],
     status: new FormControl<TaskStatus>('pending', {
       nonNullable: true,
       validators: Validators.required,
     }),
   });
   readonly titleId = `task-form-title-${Math.random().toString(36).slice(2)}`;
+
+  get createdDate(): string {
+    const value = this.task?.createdAt ?? new Date().toISOString();
+    return new Intl.DateTimeFormat('en', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(value));
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['task'] || changes['open']) {
@@ -58,4 +77,25 @@ export class TaskFormDialogComponent implements OnChanges {
     }
     this.save.emit(this.form.getRawValue());
   }
+
+  setDueDate(value: string): void {
+    this.form.controls.dueDate.setValue(value);
+    this.form.controls.dueDate.markAsTouched();
+  }
+
+  onBackdropClick(event: MouseEvent): void {
+    if (event.target === event.currentTarget) this.cancel.emit();
+  }
+
+  private toLocalDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+}
+
+function minimumDate(minimum: string): ValidatorFn {
+  return (control: AbstractControl<string>): ValidationErrors | null =>
+    !control.value || control.value >= minimum ? null : { minimumDate: true };
 }

@@ -10,6 +10,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Verify the core workflow across desktop, tablet and mobile layouts.',
     status: 'completed',
     dueDate: '2026-09-02',
+    createdAt: '2026-08-25T08:30:00.000Z',
   },
   {
     id: '2',
@@ -17,6 +18,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Persist local task changes and expose the completed-task route.',
     status: 'completed',
     dueDate: '2026-09-03',
+    createdAt: '2026-08-26T09:15:00.000Z',
   },
   {
     id: '3',
@@ -24,6 +26,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Complete the reviewer sign-in experience and protect assessment routes.',
     status: 'in-progress',
     dueDate: '2026-09-04',
+    createdAt: '2026-08-27T07:45:00.000Z',
   },
   {
     id: '4',
@@ -31,6 +34,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Manage task state with a BehaviorSubject and derived observable selectors.',
     status: 'in-progress',
     dueDate: '2026-09-04',
+    createdAt: '2026-08-28T10:20:00.000Z',
   },
   {
     id: '5',
@@ -38,6 +42,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Extract filters, rows, summary cards and shared feedback components.',
     status: 'in-progress',
     dueDate: '2026-09-05',
+    createdAt: '2026-08-29T05:40:00.000Z',
   },
   {
     id: '6',
@@ -45,6 +50,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Validate mandatory titles and due dates with helpful field messages.',
     status: 'pending',
     dueDate: '2026-09-06',
+    createdAt: '2026-08-30T11:10:00.000Z',
   },
   {
     id: '7',
@@ -52,6 +58,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Cover add, edit, delete, complete and restore state transitions.',
     status: 'pending',
     dueDate: '2026-09-07',
+    createdAt: '2026-08-31T06:25:00.000Z',
   },
   {
     id: '8',
@@ -59,6 +66,7 @@ export const INITIAL_TASKS: Task[] = [
     description: 'Run formatting, tests and the optimized Angular build.',
     status: 'pending',
     dueDate: '2026-09-08',
+    createdAt: '2026-09-01T08:00:00.000Z',
   },
 ];
 
@@ -69,7 +77,14 @@ export class LocalStorageTaskRepository implements TaskRepository {
     if (!value) return INITIAL_TASKS.map((task) => ({ ...task }));
     const parsed: unknown = JSON.parse(value);
     if (!Array.isArray(parsed)) throw new Error('Saved task data is invalid.');
-    return parsed as Task[];
+    return parsed.map((task) => {
+      const savedTask = task as Partial<Task>;
+      return {
+        ...savedTask,
+        createdAt:
+          typeof savedTask.createdAt === 'string' ? savedTask.createdAt : new Date().toISOString(),
+      } as Task;
+    });
   }
   save(tasks: readonly Task[]): void {
     localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));

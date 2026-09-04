@@ -226,6 +226,46 @@
   position: relative;
   gap: 0.65rem;
 }
+.create-task-button {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #4b095b;
+  border-radius: 0.72rem;
+  color: #fff;
+  background: linear-gradient(135deg, #4b095b, #6d167d);
+  box-shadow: 0 0.35rem 0.9rem rgba(75, 9, 91, 0.16);
+  font-size: 0.76rem;
+  font-weight: 750;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.create-task-button svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+.create-task-button:hover,
+.create-task-button:focus-visible {
+  outline: none;
+  background: linear-gradient(135deg, #3c0549, #5b0f6a);
+  box-shadow: 0 0.45rem 1.15rem rgba(75, 9, 91, 0.24);
+  transform: translateY(-1px);
+}
+.create-task-button:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(135, 83, 205, 0.2),
+    0 0.45rem 1.15rem rgba(75, 9, 91, 0.2);
+}
 .notification-button,
 .menu-button {
   width: 2.5rem;
@@ -377,5 +417,17 @@
   }
   .notification-button {
     display: none;
+  }
+  .create-task-button {
+    width: 2.5rem;
+    padding: 0;
+  }
+  .create-task-button span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
