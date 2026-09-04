@@ -19,7 +19,12 @@
   </button>
 
   @if (open()) {
-    <section class="calendar" role="dialog" aria-label="Choose due date">
+    <section
+      class="calendar"
+      role="dialog"
+      aria-label="Choose due date"
+      (keydown)="handleKeydown($event)"
+    >
       <header>
         <button
           type="button"
@@ -49,6 +54,8 @@
             [disabled]="day.disabled"
             [attr.aria-label]="day.value"
             [attr.aria-pressed]="day.selected"
+            [attr.data-active]="day.active"
+            [tabindex]="day.active ? 0 : -1"
             (click)="select(day)"
           >
             {{ day.number }}

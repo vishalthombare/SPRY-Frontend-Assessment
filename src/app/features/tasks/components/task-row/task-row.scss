@@ -6,6 +6,10 @@
   align-items: center;
   padding: 1rem 1.2rem;
   border-bottom: 1px solid v.$color-border;
+  transition: background 0.16s ease;
+}
+.task-row:hover {
+  background: #fdfbfe;
 }
 .task-row:last-child {
   border-bottom: 0;
@@ -43,8 +47,22 @@
   font-size: 0.74rem;
 }
 .task-copy small {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
   color: #8f8594;
   font-size: 0.67rem;
+}
+.task-copy small svg,
+.actions svg,
+.status-check svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 .status {
   padding: 0.26rem 0.5rem;
@@ -78,9 +96,21 @@
   color: #6d6172;
   background: #fff;
   cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+.actions button:hover {
+  border-color: #cbbdd0;
+  background: #f9f5fa;
+  transform: translateY(-1px);
 }
 .actions .complete,
 .actions .restore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   color: #4f741e;
   background: #f5faec;
   border-color: #dbeabe;

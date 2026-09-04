@@ -221,11 +221,18 @@ select:focus {
   color: v.$color-text;
   background: #fff;
 }
-.readonly-control {
+.created-meta {
   position: relative;
-  display: block;
+  min-height: 2.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0.7rem 0.65rem 2.35rem;
+  border-radius: 0.72rem;
+  color: #6f6474;
+  background: #f5f1f6;
 }
-.readonly-control svg {
+.created-meta svg {
   position: absolute;
   top: 50%;
   left: 0.8rem;
@@ -240,18 +247,15 @@ select:focus {
   transform: translateY(-50%);
   pointer-events: none;
 }
-.readonly-control input {
-  min-height: 2.9rem;
-  padding: 0.78rem 3.4rem 0.78rem 2.35rem;
-  color: #6f6474;
-  background: #f7f4f8;
-  font-weight: 600;
-  cursor: default;
+.created-meta strong {
+  min-width: 0;
+  margin-right: auto;
+  overflow: hidden;
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.readonly-control > span {
-  position: absolute;
-  top: 50%;
-  right: 0.65rem;
+.created-meta > span {
   padding: 0.2rem 0.35rem;
   border-radius: 0.35rem;
   color: #887b8d;
@@ -259,8 +263,6 @@ select:focus {
   font-size: 0.52rem;
   font-weight: 700;
   text-transform: uppercase;
-  transform: translateY(-50%);
-  pointer-events: none;
 }
 .status-control:focus-within > svg {
   stroke: #6f35a8;
@@ -306,6 +308,9 @@ select:focus {
     display: none;
   }
   .dialog-actions {
+    position: sticky;
+    z-index: 5;
+    bottom: 0;
     align-items: stretch;
     flex-direction: column;
     padding: 1rem 1.2rem;

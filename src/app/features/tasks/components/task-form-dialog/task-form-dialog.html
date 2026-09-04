@@ -66,17 +66,17 @@
               </small>
             }
           </label>
-          <label class="field created-field">
+          <div class="field created-field">
             <span class="field-heading">Created date <small>Read only</small></span>
-            <span class="readonly-control">
+            <span class="created-meta">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 8v4l2.5 1.5"></path>
                 <circle cx="12" cy="12" r="9"></circle>
               </svg>
-              <input [value]="createdDate" readonly aria-label="Created date" />
-              <span aria-hidden="true">Locked</span>
+              <strong>{{ createdDate }}</strong>
+              <span aria-hidden="true">Immutable</span>
             </span>
-          </label>
+          </div>
           <label class="field status-field">
             <span class="field-heading">Status</span>
             <span class="status-control">

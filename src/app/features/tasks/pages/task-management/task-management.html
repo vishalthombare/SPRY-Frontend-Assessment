@@ -4,7 +4,9 @@
     <h1>Task Management</h1>
     <p>Plan, prioritize and complete the frontend assessment from one clear workspace.</p>
   </div>
-  <button class="add-button" type="button" (click)="addTask()">＋ Add task</button>
+  <button class="add-button" type="button" (click)="addTask()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add task
+  </button>
 </header>
 <section class="summary-grid" aria-label="Task summary">
   <app-task-summary-card

@@ -16,6 +16,7 @@ interface CalendarDay {
   readonly disabled: boolean;
   readonly selected: boolean;
   readonly today: boolean;
+  readonly active: boolean;
 }
 
 @Component({
@@ -26,6 +27,7 @@ interface CalendarDay {
 export class DatePickerComponent {
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly selectedValue = signal('');
+  private readonly activeValue = signal(this.formatDate(new Date()));
 
   @Input() min = '';
   @Input() ariaLabel = 'Choose date';
@@ -71,6 +73,8 @@ export class DatePickerComponent {
     if (!this.open()) {
       const initial = this.selectedValue() ? this.parseDate(this.selectedValue()) : new Date();
       this.visibleMonth.set(this.startOfMonth(initial));
+      this.activeValue.set(this.formatDate(initial));
+      requestAnimationFrame(() => this.focusActiveDate());
     }
     this.open.update((value) => !value);
   }
@@ -79,6 +83,42 @@ export class DatePickerComponent {
     if (offset < 0 && !this.canGoPrevious) return;
     const current = this.visibleMonth();
     this.visibleMonth.set(new Date(current.getFullYear(), current.getMonth() + offset, 1));
+    const next = this.visibleMonth();
+    const value = this.formatDate(next);
+    this.activeValue.set(this.min && value < this.min ? this.min : value);
+    requestAnimationFrame(() => this.focusActiveDate());
+  }
+
+  handleKeydown(event: KeyboardEvent): void {
+    const offsets: Record<string, number> = {
+      ArrowLeft: -1,
+      ArrowRight: 1,
+      ArrowUp: -7,
+      ArrowDown: 7,
+    };
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      const day = this.days().find((item) => item.value === this.activeValue());
+      if (day) this.select(day);
+      return;
+    }
+    if (event.key === 'PageUp' || event.key === 'PageDown') {
+      event.preventDefault();
+      this.changeMonth(event.key === 'PageUp' ? -1 : 1);
+      return;
+    }
+
+    const offset = offsets[event.key];
+    if (!offset) return;
+    event.preventDefault();
+    const date = this.parseDate(this.activeValue());
+    date.setDate(date.getDate() + offset);
+    const value = this.formatDate(date);
+    if (this.min && value < this.min) return;
+    this.activeValue.set(value);
+    this.visibleMonth.set(this.startOfMonth(date));
+    requestAnimationFrame(() => this.focusActiveDate());
   }
 
   select(day: CalendarDay): void {
@@ -131,6 +171,7 @@ export class DatePickerComponent {
       disabled: Boolean(this.min && value < this.min),
       selected: value === this.selectedValue(),
       today: value === this.formatDate(new Date()),
+      active: value === this.activeValue(),
     };
   }
 
@@ -148,5 +189,9 @@ export class DatePickerComponent {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  private focusActiveDate(): void {
+    this.element.nativeElement.querySelector<HTMLElement>('[data-active="true"]')?.focus();
   }
 }

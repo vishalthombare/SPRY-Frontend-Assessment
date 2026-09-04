@@ -7,7 +7,9 @@
     [attr.aria-label]="task.status === 'completed' ? 'Task completed' : 'Complete task'"
     (click)="complete.emit(task)"
   >
-    {{ task.status === 'completed' ? '✓' : '' }}
+    @if (task.status === 'completed') {
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"></path></svg>
+    }
   </button>
   <div class="task-copy">
     <div class="task-title">
@@ -15,15 +17,34 @@
       ><span class="status status--{{ task.status }}">{{ statusLabel }}</span>
     </div>
     <p>{{ task.description }}</p>
-    <small>▦&nbsp; Due {{ task.dueDate | date: 'MMM d, y' : 'UTC' }}</small>
+    <small
+      ><svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+        <path d="M16 3v4M8 3v4M3 10h18"></path></svg
+      >Due {{ task.dueDate | date: 'MMM d, y' : 'UTC' }}</small
+    >
   </div>
   <div class="actions">
     @if (completedView) {
-      <button class="restore" type="button" (click)="restore.emit(task)">↻ Restore</button>
+      <button class="restore" type="button" (click)="restore.emit(task)">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 12a8 8 0 1 0 2.35-5.65L4 8.7M4 4v4.7h4.7"></path></svg
+        >Restore
+      </button>
     } @else if (task.status !== 'completed') {
-      <button class="complete" type="button" (click)="complete.emit(task)">✓ Complete</button>
+      <button class="complete" type="button" (click)="complete.emit(task)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"></path></svg>Complete
+      </button>
     }
-    <button type="button" aria-label="Edit task" (click)="edit.emit(task)">✎</button
-    ><button type="button" aria-label="Delete task" (click)="remove.emit(task)">♜</button>
+    <button type="button" aria-label="Edit task" (click)="edit.emit(task)">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m4 20 4.2-1 10.3-10.3a2.1 2.1 0 0 0-3-3L5.2 16 4 20Z"></path>
+        <path d="m13.8 7.4 3 3"></path>
+      </svg></button
+    ><button type="button" aria-label="Delete task" (click)="remove.emit(task)">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"></path>
+      </svg>
+    </button>
   </div>
 </article>

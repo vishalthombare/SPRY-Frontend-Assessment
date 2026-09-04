@@ -89,13 +89,35 @@
 }
 .nav-list b {
   width: 1.2rem;
-  font-size: 1rem;
-  text-align: center;
+  height: 1.2rem;
+}
+.nav-list svg,
+.review-card svg,
+.sidebar-profile button svg,
+.close-button svg,
+.menu-button svg,
+.profile-popover button svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
 }
 .nav-list a:hover,
 .nav-list a.active {
   color: #fff;
   background: rgba(255, 255, 255, 0.07);
+}
+.nav-list a {
+  transition:
+    color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease;
+}
+.nav-list a:hover {
+  transform: translateX(2px);
 }
 .nav-list a.active {
   border-color: rgba(195, 239, 118, 0.16);
@@ -104,22 +126,6 @@
 }
 .nav-list a.active b {
   color: #c3ef76;
-}
-.nav-count {
-  min-width: 1.4rem;
-  height: 1.4rem;
-  display: grid;
-  place-items: center;
-  margin-left: auto;
-  border-radius: 99px;
-  color: #24002f;
-  background: #c3ef76;
-  font-size: 0.69rem;
-  font-weight: 850;
-}
-.nav-count.muted {
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(255, 255, 255, 0.1);
 }
 .review-card {
   margin-top: auto;
@@ -266,7 +272,6 @@
     0 0 0 3px rgba(135, 83, 205, 0.2),
     0 0.45rem 1.15rem rgba(75, 9, 91, 0.2);
 }
-.notification-button,
 .menu-button {
   width: 2.5rem;
   height: 2.5rem;
@@ -276,24 +281,6 @@
   color: #64576b;
   background: #fff;
   cursor: pointer;
-}
-.notification-button {
-  display: grid;
-}
-.notification-button svg {
-  width: 1.15rem;
-  height: 1.15rem;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.7;
-}
-.notification-button:hover,
-.notification-button:focus-visible {
-  border-color: #d3c8d8;
-  color: v.$color-primary;
-  background: #faf7fb;
 }
 .menu-button {
   display: none;
@@ -376,6 +363,9 @@
   font-size: 0.76rem;
   font-weight: 700;
 }
+.profile-popover > button svg {
+  flex: 0 0 auto;
+}
 .content {
   width: min(100%, 92rem);
   margin: auto;
@@ -413,9 +403,6 @@
 }
 @media (max-width: 560px) {
   .secure-session {
-    display: none;
-  }
-  .notification-button {
     display: none;
   }
   .create-task-button {
