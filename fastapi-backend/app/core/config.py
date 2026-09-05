@@ -16,6 +16,10 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     cors_origins: str = "http://localhost:4200"
     database_url: str
+    jwt_secret: str
+    jwt_algorithm: str = "HS256"
+    jwt_expires_minutes: int = 60
+    jwt_refresh_expires_days: int = 7
 
     @computed_field
     @property

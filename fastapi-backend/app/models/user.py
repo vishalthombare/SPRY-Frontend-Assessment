@@ -21,6 +21,7 @@ class User(AuditMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false", nullable=False
     )
+    auth_version: Mapped[int] = mapped_column(default=0, server_default="0", nullable=False)
     tasks: Mapped[list["Task"]] = relationship(
         back_populates="owner",
         foreign_keys="Task.user_id",
