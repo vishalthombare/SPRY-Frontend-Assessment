@@ -1,9 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CollectionResponse } from '../../../core/api/api-response.model';
+import { PaginatedResponse } from '../../../core/api/api-response.model';
 import { ApiService } from '../../../core/api/api.service';
 import { API_ENDPOINTS } from '../../../core/constants/api-endpoints.constants';
-import { Task, TaskApiModel, TaskApiWrite, TaskFormValue, TaskStatus } from '../models/task.model';
+import { APP_CONSTANTS } from '../../../core/constants/app.constants';
+import {
+  Task,
+  TaskApiModel,
+  TaskApiWrite,
+  TaskCounts,
+  TaskFormValue,
+  TaskListQuery,
+  TaskPage,
+  TaskStatus,
+  TaskSummaryApiModel,
+} from '../models/task.model';
 
 /**
  * Handles only HTTP communication for tasks.
@@ -13,10 +24,36 @@ import { Task, TaskApiModel, TaskApiWrite, TaskFormValue, TaskStatus } from '../
 export class TaskApiService {
   private readonly api = inject(ApiService);
 
-  getTasks(): Observable<Task[]> {
-    return this.api
-      .get<CollectionResponse<TaskApiModel>>(API_ENDPOINTS.tasks.root)
-      .pipe(map(({ response }) => response.content.map((task) => this.toTask(task))));
+  getTasks(query: TaskListQuery): Observable<TaskPage> {
+    const status = query.completedOnly ? 'completed' : query.status;
+    const params: Record<string, string | number> = {
+      page: query.page,
+      page_size: APP_CONSTANTS.defaultPageSize,
+      order: query.sort,
+    };
+    if (query.query.trim()) params['search'] = query.query.trim();
+    if (status !== 'all') params['status'] = status === 'in-progress' ? 'in_progress' : status;
+
+    return this.api.get<PaginatedResponse<TaskApiModel>>(API_ENDPOINTS.tasks.root, { params }).pipe(
+      map(({ response }) => ({
+        tasks: response.content.map((task) => this.toTask(task)),
+        page: response.page,
+        pageSize: response.page_size,
+        totalElements: response.total_elements,
+        totalPages: response.total_pages,
+      })),
+    );
+  }
+
+  getSummary(): Observable<TaskCounts> {
+    return this.api.get<TaskSummaryApiModel>(API_ENDPOINTS.tasks.summary).pipe(
+      map(({ response }) => ({
+        total: response.total,
+        pending: response.pending,
+        inProgress: response.in_progress,
+        completed: response.completed,
+      })),
+    );
   }
 
   createTask(value: TaskFormValue): Observable<Task> {

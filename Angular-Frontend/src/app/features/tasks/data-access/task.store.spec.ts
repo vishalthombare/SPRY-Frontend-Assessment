@@ -1,13 +1,30 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
-import { Task, TaskFormValue } from '../models/task.model';
+import { Task, TaskCounts, TaskFormValue, TaskListQuery, TaskPage } from '../models/task.model';
 import { TaskApiService } from './task-api.service';
 import { TaskStore } from './task.store';
 
 class FakeTaskApiService {
   constructor(private tasks: Task[]) {}
-  getTasks(): Observable<Task[]> {
-    return of(this.tasks.map((task) => ({ ...task })));
+  getTasks(query: TaskListQuery): Observable<TaskPage> {
+    const filtered = query.completedOnly
+      ? this.tasks.filter((task) => task.status === 'completed')
+      : this.tasks;
+    return of({
+      tasks: filtered.map((task) => ({ ...task })),
+      page: query.page,
+      pageSize: 10,
+      totalElements: filtered.length,
+      totalPages: filtered.length ? 1 : 0,
+    });
+  }
+  getSummary(): Observable<TaskCounts> {
+    return of({
+      total: this.tasks.length,
+      pending: this.tasks.filter((task) => task.status === 'pending').length,
+      inProgress: this.tasks.filter((task) => task.status === 'in-progress').length,
+      completed: this.tasks.filter((task) => task.status === 'completed').length,
+    });
   }
   createTask(formValue: TaskFormValue): Observable<Task> {
     const task = { ...formValue, id: 4, createdAt: '2026-09-01T00:00:00.000Z' };
@@ -74,6 +91,7 @@ describe('TaskStore', () => {
       providers: [TaskStore, { provide: TaskApiService, useValue: taskApi }],
     });
     store = TestBed.inject(TaskStore);
+    store.loadPage({ query: '', status: 'all', sort: 'asc', page: 1, completedOnly: false });
   });
 
   it('calculates all summary counts from the same collection', async () => {

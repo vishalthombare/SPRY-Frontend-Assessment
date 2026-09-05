@@ -39,7 +39,10 @@
       <span class="section-label">Current workload</span>
       <h2>{{ completedView() ? 'Finished work' : 'All assessment tasks' }}</h2>
     </div>
-    <span>{{ visibleTasks().length }} {{ visibleTasks().length === 1 ? 'task' : 'tasks' }}</span>
+    <span
+      >{{ pagination().totalElements }}
+      {{ pagination().totalElements === 1 ? 'task' : 'tasks' }}</span
+    >
   </header>
   <nav class="task-tabs" aria-label="Task views">
     <a routerLink="/tasks" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
@@ -69,7 +72,7 @@
     />
   } @else {
     <div class="task-list">
-      @for (task of paginatedTasks(); track task.id) {
+      @for (task of visibleTasks(); track task.id) {
         <app-task-row
           [task]="task"
           [completedView]="completedView()"
@@ -83,7 +86,7 @@
     <nav class="pagination" aria-label="Task list pagination">
       <p>
         Showing <strong>{{ firstVisibleTask() }}–{{ lastVisibleTask() }}</strong> of
-        <strong>{{ visibleTasks().length }}</strong> tasks
+        <strong>{{ pagination().totalElements }}</strong> tasks
       </p>
       <div class="pagination-controls">
         <button

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 import { DueDateSort, TaskFilterValue, TaskStatus } from '../../models/task.model';
 
 @Component({
@@ -17,7 +18,10 @@ export class TaskFiltersComponent {
     sort: new FormControl<DueDateSort>('asc', { nonNullable: true }),
   });
   constructor() {
-    this.form.valueChanges.subscribe(() => this.filtersChange.emit(this.form.getRawValue()));
+    // Avoid sending an API request for every keystroke while keeping selects responsive.
+    this.form.valueChanges
+      .pipe(debounceTime(300))
+      .subscribe(() => this.filtersChange.emit(this.form.getRawValue()));
   }
   get hasActiveFilters(): boolean {
     const value = this.form.getRawValue();

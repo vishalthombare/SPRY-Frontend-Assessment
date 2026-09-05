@@ -21,6 +21,7 @@ def mock_session() -> MagicMock:
     session.commit = AsyncMock()
     session.refresh = AsyncMock()
     session.scalars = AsyncMock()
+    session.scalar = AsyncMock()
     session.execute = AsyncMock()
     return session
 
@@ -31,19 +32,26 @@ async def test_list_tasks_applies_status_search_and_descending_due_date() -> Non
     scalar_result = MagicMock()
     scalar_result.all.return_value = []
     session.scalars.return_value = scalar_result
+    session.scalar.return_value = 23
 
-    await list_tasks(
+    tasks, total = await list_tasks(
         session,
         user_id=4,
         search="API",
         task_status=TaskStatus.IN_PROGRESS,
         order=SortOrder.DESC,
+        page=2,
+        page_size=10,
     )
 
     statement = str(session.scalars.await_args.args[0])
     assert "lower(tasks.title) LIKE lower" in statement
     assert "tasks.status" in statement
     assert "tasks.due_date DESC" in statement
+    assert "LIMIT" in statement
+    assert "OFFSET" in statement
+    assert tasks == []
+    assert total == 23
 
 
 @pytest.mark.asyncio

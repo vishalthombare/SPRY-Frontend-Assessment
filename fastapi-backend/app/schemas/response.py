@@ -17,6 +17,15 @@ class CollectionResponse[ContentItem](BaseModel):
     content: list[ContentItem]
 
 
+class PaginatedResponse[ContentItem](CollectionResponse[ContentItem]):
+    """Collection response with one-based pagination metadata."""
+
+    page: int
+    page_size: int
+    total_elements: int
+    total_pages: int
+
+
 def success[ResponseData](
     response: ResponseData,
     *,

@@ -25,8 +25,10 @@ async def list_tasks(
     search: str | None,
     task_status: TaskStatus | None,
     order: SortOrder,
-) -> list[Task]:
-    """Return filtered tasks ordered by due date with deterministic ID ties."""
+    page: int,
+    page_size: int,
+) -> tuple[list[Task], int]:
+    """Return one filtered task page and the total matching record count."""
     statement = active_user_tasks(user_id)
     if search and (query := search.strip()):
         pattern = f"%{query}%"
@@ -34,10 +36,17 @@ async def list_tasks(
     if task_status is not None:
         statement = statement.where(Task.status == task_status)
 
+    # Count before applying the page window so the client can calculate navigation.
+    count_statement = select(func.count()).select_from(statement.order_by(None).subquery())
+    total = await session.scalar(count_statement) or 0
+
     # ID is a stable tie-breaker when multiple tasks share the same due date.
     direction = asc if order == SortOrder.ASC else desc
-    result = await session.scalars(statement.order_by(direction(Task.due_date), asc(Task.id)))
-    return list(result.all())
+    offset = (page - 1) * page_size
+    result = await session.scalars(
+        statement.order_by(direction(Task.due_date), asc(Task.id)).offset(offset).limit(page_size)
+    )
+    return list(result.all()), total
 
 
 async def get_task(session: AsyncSession, user_id: int, task_id: int) -> Task | None:

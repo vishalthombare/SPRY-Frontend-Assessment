@@ -9,3 +9,11 @@ export interface ApiResponse<T> {
 export interface CollectionResponse<T> {
   content: T[];
 }
+
+/** Backend collection shape returned by paginated endpoints. */
+export interface PaginatedResponse<T> extends CollectionResponse<T> {
+  page: number;
+  page_size: number;
+  total_elements: number;
+  total_pages: number;
+}

@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state';
 import { LoadingSpinnerComponent } from '../../../../shared/components/loading-spinner/loading-spinner';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog';
@@ -11,7 +11,6 @@ import { TaskFormDialogComponent } from '../../components/task-form-dialog/task-
 import { TaskRowComponent } from '../../components/task-row/task-row';
 import { TaskSummaryCardComponent } from '../../components/task-summary-card/task-summary-card';
 import { TaskStore } from '../../data-access/task.store';
-import { filterAndSortTasks } from '../../data-access/task.selectors';
 import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
 
 /** Coordinates route state, task selectors, dialogs, actions, and transient feedback. */
@@ -33,7 +32,6 @@ import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
   styleUrl: './task-management.scss',
 })
 export class TaskManagementPageComponent {
-  private readonly pageSize = 10;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly store = inject(TaskStore);
@@ -57,31 +55,22 @@ export class TaskManagementPageComponent {
   });
   readonly loading = toSignal(this.store.loading$, { initialValue: true });
   readonly error = toSignal(this.store.error$, { initialValue: null });
-  readonly visibleTasks = toSignal(
-    // Both routed tabs share this page; route data changes only the derived collection.
-    combineLatest([this.store.tasks$, this.filterSubject, this.route.data]).pipe(
-      map(([tasks, filters, data]) => {
-        return filterAndSortTasks(tasks, filters, data['completedOnly'] === true);
-      }),
-    ),
-    { initialValue: [] },
-  );
-  readonly currentPage = signal(1);
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.visibleTasks().length / this.pageSize)),
-  );
+  readonly visibleTasks = toSignal(this.store.tasks$, { initialValue: [] });
+  readonly pagination = toSignal(this.store.pagination$, {
+    initialValue: { page: 1, pageSize: 10, totalElements: 0, totalPages: 0 },
+  });
+  readonly currentPage = computed(() => this.pagination().page);
+  readonly totalPages = computed(() => this.pagination().totalPages);
   readonly pageNumbers = computed(() =>
     Array.from({ length: this.totalPages() }, (_, index) => index + 1),
   );
-  readonly paginatedTasks = computed(() => {
-    const start = (this.currentPage() - 1) * this.pageSize;
-    return this.visibleTasks().slice(start, start + this.pageSize);
-  });
   readonly firstVisibleTask = computed(() =>
-    this.visibleTasks().length === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1,
+    this.pagination().totalElements === 0
+      ? 0
+      : (this.currentPage() - 1) * this.pagination().pageSize + 1,
   );
   readonly lastVisibleTask = computed(() =>
-    Math.min(this.currentPage() * this.pageSize, this.visibleTasks().length),
+    Math.min(this.currentPage() * this.pagination().pageSize, this.pagination().totalElements),
   );
 
   readonly formOpen = signal(false);
@@ -100,24 +89,30 @@ export class TaskManagementPageComponent {
     effect(() => {
       if (this.createRequested()) this.addTask();
     });
-    // Keep the selected page valid when route changes or mutations reduce the result set.
     effect(() => {
-      const lastPage = this.totalPages();
-      if (this.currentPage() > lastPage) this.currentPage.set(lastPage);
+      const completedOnly = this.completedView();
+      this.store.loadPage({ ...this.filterSubject.value, page: 1, completedOnly });
     });
+    // Return to the last available page when deleting the final item on a page.
     effect(() => {
-      this.completedView();
-      this.currentPage.set(1);
+      if (this.totalPages() > 0 && this.currentPage() > this.totalPages()) {
+        this.goToPage(this.totalPages());
+      }
     });
   }
 
   setFilters(filters: TaskFilterValue): void {
-    this.currentPage.set(1);
     this.filterSubject.next(filters);
+    this.store.loadPage({ ...filters, page: 1, completedOnly: this.completedView() });
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages()) this.currentPage.set(page);
+    if (page < 1 || page > this.totalPages()) return;
+    this.store.loadPage({
+      ...this.filterSubject.value,
+      page,
+      completedOnly: this.completedView(),
+    });
   }
   addTask(): void {
     this.selectedTask.set(null);

@@ -53,3 +53,26 @@ export interface TaskCounts {
   inProgress: number;
   completed: number;
 }
+
+/** Query sent to the paginated task endpoint. */
+export interface TaskListQuery extends TaskFilterValue {
+  page: number;
+  completedOnly: boolean;
+}
+
+/** One task page normalized for use by the store and page component. */
+export interface TaskPage {
+  tasks: Task[];
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+/** Summary contract returned by FastAPI before camelCase mapping. */
+export interface TaskSummaryApiModel {
+  total: number;
+  pending: number;
+  in_progress: number;
+  completed: number;
+}

@@ -16,7 +16,7 @@ from app.modules.tasks.schemas import (
     TaskSummaryResponse,
     TaskUpdate,
 )
-from app.schemas.response import ApiResponse, CollectionResponse, success
+from app.schemas.response import ApiResponse, PaginatedResponse, success
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
@@ -36,7 +36,7 @@ async def owned_task_or_404(session: DatabaseSession, user_id: int, task_id: int
 
 @router.get(
     "",
-    response_model=ApiResponse[CollectionResponse[TaskResponse]],
+    response_model=ApiResponse[PaginatedResponse[TaskResponse]],
     summary="List tasks",
 )
 async def get_tasks(
@@ -46,10 +46,23 @@ async def get_tasks(
     task_status: Annotated[TaskStatus | None, Query(alias="status")] = None,
     sort: TaskSortField = TaskSortField.DUE_DATE,
     order: SortOrder = SortOrder.ASC,
-) -> ApiResponse[CollectionResponse[TaskResponse]]:
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 10,
+) -> ApiResponse[PaginatedResponse[TaskResponse]]:
     """List the current user's tasks with assignment-required filtering and sorting."""
-    tasks = await task_service.list_tasks(session, current_user.id, search, task_status, order)
-    return success(CollectionResponse(content=tasks))
+    tasks, total = await task_service.list_tasks(
+        session, current_user.id, search, task_status, order, page, page_size
+    )
+    total_pages = (total + page_size - 1) // page_size
+    return success(
+        PaginatedResponse(
+            content=tasks,
+            page=page,
+            page_size=page_size,
+            total_elements=total,
+            total_pages=total_pages,
+        )
+    )
 
 
 @router.get("/summary", response_model=ApiResponse[TaskSummaryResponse], summary="Get task summary")
