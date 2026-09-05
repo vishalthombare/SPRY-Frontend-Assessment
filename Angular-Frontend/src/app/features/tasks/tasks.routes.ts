@@ -1,13 +1,9 @@
 import { Routes } from '@angular/router';
-import { ApiTaskRepository } from './data-access/api-task.repository';
-import { TASK_REPOSITORY } from './data-access/task.repository';
+import { TaskApiService } from './data-access/task-api.service';
 import { TaskStore } from './data-access/task.store';
 
-const taskProviders = [
-  TaskStore,
-  ApiTaskRepository,
-  { provide: TASK_REPOSITORY, useExisting: ApiTaskRepository },
-];
+// Route-level providers keep task state scoped to the Task Management feature.
+const taskProviders = [TaskStore, TaskApiService];
 
 export const TASK_ROUTES: Routes = [
   {

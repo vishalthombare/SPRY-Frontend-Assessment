@@ -1,30 +1,30 @@
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { Task, TaskFormValue } from '../models/task.model';
-import { TASK_REPOSITORY, TaskRepository } from './task.repository';
+import { TaskApiService } from './task-api.service';
 import { TaskStore } from './task.store';
 
-class MemoryRepository implements TaskRepository {
+class FakeTaskApiService {
   constructor(private tasks: Task[]) {}
-  load(): Observable<Task[]> {
+  getTasks(): Observable<Task[]> {
     return of(this.tasks.map((task) => ({ ...task })));
   }
-  create(formValue: TaskFormValue): Observable<Task> {
+  createTask(formValue: TaskFormValue): Observable<Task> {
     const task = { ...formValue, id: 4, createdAt: '2026-09-01T00:00:00.000Z' };
     this.tasks = [task, ...this.tasks];
     return of(task);
   }
-  update(id: number, formValue: TaskFormValue): Observable<Task> {
+  updateTask(id: number, formValue: TaskFormValue): Observable<Task> {
     const original = this.tasks.find((task) => task.id === id)!;
     const task = { ...original, ...formValue };
     this.tasks = this.tasks.map((item) => (item.id === id ? task : item));
     return of(task);
   }
-  remove(id: number): Observable<void> {
+  deleteTask(id: number): Observable<void> {
     this.tasks = this.tasks.filter((task) => task.id !== id);
     return of(undefined);
   }
-  setStatus(id: number, status: Task['status']): Observable<Task> {
+  updateStatus(id: number, status: Task['status']): Observable<Task> {
     const original = this.tasks.find((task) => task.id === id)!;
     const task = { ...original, status };
     this.tasks = this.tasks.map((item) => (item.id === id ? task : item));
@@ -66,12 +66,12 @@ const value: TaskFormValue = {
 };
 
 describe('TaskStore', () => {
-  let repository: MemoryRepository;
+  let taskApi: FakeTaskApiService;
   let store: TaskStore;
   beforeEach(() => {
-    repository = new MemoryRepository(seed);
+    taskApi = new FakeTaskApiService(seed);
     TestBed.configureTestingModule({
-      providers: [TaskStore, { provide: TASK_REPOSITORY, useValue: repository }],
+      providers: [TaskStore, { provide: TaskApiService, useValue: taskApi }],
     });
     store = TestBed.inject(TaskStore);
   });

@@ -10,15 +10,15 @@ import {
   tap,
 } from 'rxjs';
 import { Task, TaskCounts, TaskFormValue, TaskStatus } from '../models/task.model';
-import { TASK_REPOSITORY } from './task.repository';
+import { TaskApiService } from './task-api.service';
 
 /**
  * Owns task state for the routed task feature.
- * BehaviorSubjects keep state reactive while the repository isolates persistence details.
+ * BehaviorSubjects expose API data as one reactive source for every task component.
  */
 @Injectable()
 export class TaskStore {
-  private readonly repository = inject(TASK_REPOSITORY);
+  private readonly taskApi = inject(TaskApiService);
   private readonly tasksSubject = new BehaviorSubject<readonly Task[]>([]);
   private readonly loadingSubject = new BehaviorSubject(true);
   private readonly errorSubject = new BehaviorSubject<string | null>(null);
@@ -31,12 +31,12 @@ export class TaskStore {
     this.reload();
   }
 
-  /** Reloads the collection and exposes loading or persistence failures to the UI. */
+  /** Loads the task collection and exposes request progress or failures to the UI. */
   reload(): void {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
-    this.repository
-      .load()
+    this.taskApi
+      .getTasks()
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe({
         next: (tasks) => this.tasksSubject.next(tasks),
@@ -50,7 +50,7 @@ export class TaskStore {
   /** Adds a normalized task without mutating the existing collection. */
   add(value: TaskFormValue): Observable<boolean> {
     return this.mutate(
-      this.repository.create(value),
+      this.taskApi.createTask(value),
       (created) => [created, ...this.tasksSubject.value],
       'Task could not be created. Please try again.',
     );
@@ -59,7 +59,7 @@ export class TaskStore {
   /** Updates only the matching task and preserves immutable creation metadata. */
   update(id: number, value: TaskFormValue): Observable<boolean> {
     return this.mutate(
-      this.repository.update(id, value),
+      this.taskApi.updateTask(id, value),
       (updated) => this.tasksSubject.value.map((task) => (task.id === id ? updated : task)),
       'Task could not be updated. Please try again.',
     );
@@ -68,7 +68,7 @@ export class TaskStore {
   /** Removes a task by identifier using an immutable filter operation. */
   remove(id: number): Observable<boolean> {
     return this.mutate(
-      this.repository.remove(id),
+      this.taskApi.deleteTask(id),
       () => this.tasksSubject.value.filter((task) => task.id !== id),
       'Task could not be deleted. Please try again.',
     );
@@ -77,7 +77,7 @@ export class TaskStore {
   /** Applies workflow transitions used by Complete and Restore actions. */
   setStatus(id: number, status: TaskStatus): Observable<boolean> {
     return this.mutate(
-      this.repository.setStatus(id, status),
+      this.taskApi.updateStatus(id, status),
       (updated) => this.tasksSubject.value.map((task) => (task.id === id ? updated : task)),
       'Task status could not be changed. Please try again.',
     );
