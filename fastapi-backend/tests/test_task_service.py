@@ -23,6 +23,7 @@ def mock_session() -> MagicMock:
     session.scalars = AsyncMock()
     session.scalar = AsyncMock()
     session.execute = AsyncMock()
+    session.delete = AsyncMock()
     return session
 
 
@@ -47,6 +48,8 @@ async def test_list_tasks_applies_status_search_and_descending_due_date() -> Non
     statement = str(session.scalars.await_args.args[0])
     assert "lower(tasks.title) LIKE lower" in statement
     assert "tasks.status" in statement
+    assert "tasks.is_active IS true" in statement
+    assert "tasks.is_deleted IS false" in statement
     assert "tasks.due_date DESC" in statement
     assert "LIMIT" in statement
     assert "OFFSET" in statement
@@ -103,6 +106,9 @@ async def test_soft_delete_sets_lifecycle_audit_fields() -> None:
     assert task.is_active is False
     assert task.deleted_date is not None
     assert task.deleted_by == 4
+    assert task.updated_by == 4
+    session.delete.assert_not_awaited()
+    session.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -129,3 +135,6 @@ async def test_summary_uses_one_combined_result() -> None:
     summary = await summarize_tasks(session, user_id=4)
 
     assert summary == TaskSummaryResponse(total=8, pending=2, in_progress=3, completed=3)
+    statement = str(session.execute.await_args.args[0])
+    assert "tasks.is_active IS true" in statement
+    assert "tasks.is_deleted IS false" in statement
