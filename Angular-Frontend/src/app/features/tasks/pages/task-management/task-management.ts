@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
@@ -33,6 +33,7 @@ import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
   styleUrl: './task-management.scss',
 })
 export class TaskManagementPageComponent {
+  private readonly pageSize = 10;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly store = inject(TaskStore);
@@ -65,6 +66,23 @@ export class TaskManagementPageComponent {
     ),
     { initialValue: [] },
   );
+  readonly currentPage = signal(1);
+  readonly totalPages = computed(() =>
+    Math.max(1, Math.ceil(this.visibleTasks().length / this.pageSize)),
+  );
+  readonly pageNumbers = computed(() =>
+    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
+  );
+  readonly paginatedTasks = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.visibleTasks().slice(start, start + this.pageSize);
+  });
+  readonly firstVisibleTask = computed(() =>
+    this.visibleTasks().length === 0 ? 0 : (this.currentPage() - 1) * this.pageSize + 1,
+  );
+  readonly lastVisibleTask = computed(() =>
+    Math.min(this.currentPage() * this.pageSize, this.visibleTasks().length),
+  );
 
   readonly formOpen = signal(false);
   readonly selectedTask = signal<Task | null>(null);
@@ -82,10 +100,24 @@ export class TaskManagementPageComponent {
     effect(() => {
       if (this.createRequested()) this.addTask();
     });
+    // Keep the selected page valid when route changes or mutations reduce the result set.
+    effect(() => {
+      const lastPage = this.totalPages();
+      if (this.currentPage() > lastPage) this.currentPage.set(lastPage);
+    });
+    effect(() => {
+      this.completedView();
+      this.currentPage.set(1);
+    });
   }
 
   setFilters(filters: TaskFilterValue): void {
+    this.currentPage.set(1);
     this.filterSubject.next(filters);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) this.currentPage.set(page);
   }
   addTask(): void {
     this.selectedTask.set(null);
@@ -105,44 +137,49 @@ export class TaskManagementPageComponent {
     if (this.saving()) return;
     this.saving.set(true);
     const selected = this.selectedTask();
-    const saved = selected ? this.store.update(selected.id, value) : this.store.add(value);
-    this.saving.set(false);
-    if (saved) {
-      this.formOpen.set(false);
-      this.clearCreateRequest();
-      this.showToast(
-        selected ? 'Task updated' : 'Task added',
-        'success',
-        'Your changes were saved locally.',
-      );
-    } else this.showToast('Unable to save task', 'error', 'Please try again.');
+    const request = selected ? this.store.update(selected.id, value) : this.store.add(value);
+    request.subscribe((saved) => {
+      this.saving.set(false);
+      if (saved) {
+        this.formOpen.set(false);
+        this.clearCreateRequest();
+        this.showToast(
+          selected ? 'Task updated' : 'Task added',
+          'success',
+          'Your changes were saved.',
+        );
+      } else this.showToast('Unable to save task', 'error', 'Please try again.');
+    });
   }
   deleteTask(): void {
     const task = this.deleteTarget();
     if (!task) return;
-    const removed = this.store.remove(task.id);
-    this.deleteTarget.set(null);
-    this.showToast(
-      removed ? 'Task deleted' : 'Unable to delete task',
-      removed ? 'success' : 'error',
-      removed ? 'The task was removed.' : 'Please try again.',
-    );
+    this.store.remove(task.id).subscribe((removed) => {
+      this.deleteTarget.set(null);
+      this.showToast(
+        removed ? 'Task deleted' : 'Unable to delete task',
+        removed ? 'success' : 'error',
+        removed ? 'The task was removed.' : 'Please try again.',
+      );
+    });
   }
   completeTask(task: Task): void {
-    const saved = this.store.setStatus(task.id, 'completed');
-    this.showToast(
-      saved ? 'Task completed' : 'Unable to complete task',
-      saved ? 'success' : 'error',
-      saved ? 'The task moved to Completed Tasks.' : 'Please try again.',
-    );
+    this.store.setStatus(task.id, 'completed').subscribe((saved) => {
+      this.showToast(
+        saved ? 'Task completed' : 'Unable to complete task',
+        saved ? 'success' : 'error',
+        saved ? 'The task moved to Completed Tasks.' : 'Please try again.',
+      );
+    });
   }
   restoreTask(task: Task): void {
-    const saved = this.store.setStatus(task.id, 'in-progress');
-    this.showToast(
-      saved ? 'Task restored' : 'Unable to restore task',
-      saved ? 'success' : 'error',
-      saved ? 'The task moved back to In Progress.' : 'Please try again.',
-    );
+    this.store.setStatus(task.id, 'in-progress').subscribe((saved) => {
+      this.showToast(
+        saved ? 'Task restored' : 'Unable to restore task',
+        saved ? 'success' : 'error',
+        saved ? 'The task moved back to In Progress.' : 'Please try again.',
+      );
+    });
   }
   retry(): void {
     this.store.reload();

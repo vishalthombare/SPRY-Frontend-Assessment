@@ -1,24 +1,40 @@
 import { TestBed } from '@angular/core/testing';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { Task, TaskFormValue } from '../models/task.model';
 import { TASK_REPOSITORY, TaskRepository } from './task.repository';
 import { TaskStore } from './task.store';
 
 class MemoryRepository implements TaskRepository {
-  saved: readonly Task[] = [];
   constructor(private tasks: Task[]) {}
-  load(): Task[] {
-    return this.tasks.map((task) => ({ ...task }));
+  load(): Observable<Task[]> {
+    return of(this.tasks.map((task) => ({ ...task })));
   }
-  save(tasks: readonly Task[]): void {
-    this.saved = tasks.map((task) => ({ ...task }));
-    this.tasks = [...this.saved];
+  create(formValue: TaskFormValue): Observable<Task> {
+    const task = { ...formValue, id: 4, createdAt: '2026-09-01T00:00:00.000Z' };
+    this.tasks = [task, ...this.tasks];
+    return of(task);
+  }
+  update(id: number, formValue: TaskFormValue): Observable<Task> {
+    const original = this.tasks.find((task) => task.id === id)!;
+    const task = { ...original, ...formValue };
+    this.tasks = this.tasks.map((item) => (item.id === id ? task : item));
+    return of(task);
+  }
+  remove(id: number): Observable<void> {
+    this.tasks = this.tasks.filter((task) => task.id !== id);
+    return of(undefined);
+  }
+  setStatus(id: number, status: Task['status']): Observable<Task> {
+    const original = this.tasks.find((task) => task.id === id)!;
+    const task = { ...original, status };
+    this.tasks = this.tasks.map((item) => (item.id === id ? task : item));
+    return of(task);
   }
 }
 
 const seed: Task[] = [
   {
-    id: '1',
+    id: 1,
     title: 'Pending',
     description: '',
     status: 'pending',
@@ -26,7 +42,7 @@ const seed: Task[] = [
     createdAt: '2026-09-01T00:00:00.000Z',
   },
   {
-    id: '2',
+    id: 2,
     title: 'Active',
     description: '',
     status: 'in-progress',
@@ -34,7 +50,7 @@ const seed: Task[] = [
     createdAt: '2026-09-01T00:00:00.000Z',
   },
   {
-    id: '3',
+    id: 3,
     title: 'Done',
     description: '',
     status: 'completed',
@@ -69,21 +85,29 @@ describe('TaskStore', () => {
     });
   });
   it('adds and edits tasks with immutable persisted updates', async () => {
-    expect(store.add(value)).toBe(true);
-    const added = repository.saved[0];
+    expect(await firstValueFrom(store.add(value))).toBe(true);
+    const added = (await firstValueFrom(store.tasks$))[0];
     expect(added.title).toBe('New task');
-    expect(store.update(added.id, { ...value, title: 'Updated task' })).toBe(true);
-    expect(repository.saved.find((task) => task.id === added.id)?.title).toBe('Updated task');
+    expect(await firstValueFrom(store.update(added.id, { ...value, title: 'Updated task' }))).toBe(
+      true,
+    );
+    expect((await firstValueFrom(store.tasks$)).find((task) => task.id === added.id)?.title).toBe(
+      'Updated task',
+    );
     expect(seed).toHaveLength(3);
   });
-  it('deletes only the selected task', () => {
-    expect(store.remove('2')).toBe(true);
-    expect(repository.saved.map((task) => task.id)).toEqual(['1', '3']);
+  it('deletes only the selected task', async () => {
+    expect(await firstValueFrom(store.remove(2))).toBe(true);
+    expect((await firstValueFrom(store.tasks$)).map((task) => task.id)).toEqual([1, 3]);
   });
-  it('completes and restores tasks', () => {
-    store.setStatus('1', 'completed');
-    expect(repository.saved.find((task) => task.id === '1')?.status).toBe('completed');
-    store.setStatus('1', 'in-progress');
-    expect(repository.saved.find((task) => task.id === '1')?.status).toBe('in-progress');
+  it('completes and restores tasks', async () => {
+    await firstValueFrom(store.setStatus(1, 'completed'));
+    expect((await firstValueFrom(store.tasks$)).find((task) => task.id === 1)?.status).toBe(
+      'completed',
+    );
+    await firstValueFrom(store.setStatus(1, 'in-progress'));
+    expect((await firstValueFrom(store.tasks$)).find((task) => task.id === 1)?.status).toBe(
+      'in-progress',
+    );
   });
 });

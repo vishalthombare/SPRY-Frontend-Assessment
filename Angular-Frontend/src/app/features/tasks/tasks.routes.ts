@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
-import { LocalStorageTaskRepository } from './data-access/local-storage-task.repository';
+import { ApiTaskRepository } from './data-access/api-task.repository';
 import { TASK_REPOSITORY } from './data-access/task.repository';
 import { TaskStore } from './data-access/task.store';
 
 const taskProviders = [
   TaskStore,
-  LocalStorageTaskRepository,
-  { provide: TASK_REPOSITORY, useExisting: LocalStorageTaskRepository },
+  ApiTaskRepository,
+  { provide: TASK_REPOSITORY, useExisting: ApiTaskRepository },
 ];
 
 export const TASK_ROUTES: Routes = [

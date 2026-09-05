@@ -1,5 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, map } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  distinctUntilChanged,
+  finalize,
+  map,
+  Observable,
+  of,
+  tap,
+} from 'rxjs';
 import { Task, TaskCounts, TaskFormValue, TaskStatus } from '../models/task.model';
 import { TASK_REPOSITORY } from './task.repository';
 
@@ -26,64 +35,69 @@ export class TaskStore {
   reload(): void {
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
-    try {
-      this.tasksSubject.next(this.repository.load());
-    } catch {
-      this.tasksSubject.next([]);
-      this.errorSubject.next('Tasks could not be loaded. Please try again.');
-    } finally {
-      this.loadingSubject.next(false);
-    }
+    this.repository
+      .load()
+      .pipe(finalize(() => this.loadingSubject.next(false)))
+      .subscribe({
+        next: (tasks) => this.tasksSubject.next(tasks),
+        error: () => {
+          this.tasksSubject.next([]);
+          this.errorSubject.next('Tasks could not be loaded. Please try again.');
+        },
+      });
   }
 
   /** Adds a normalized task without mutating the existing collection. */
-  add(value: TaskFormValue): boolean {
-    return this.commit([
-      {
-        ...value,
-        title: value.title.trim(),
-        description: value.description.trim(),
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-      },
-      ...this.tasksSubject.value,
-    ]);
+  add(value: TaskFormValue): Observable<boolean> {
+    return this.mutate(
+      this.repository.create(value),
+      (created) => [created, ...this.tasksSubject.value],
+      'Task could not be created. Please try again.',
+    );
   }
 
   /** Updates only the matching task and preserves immutable creation metadata. */
-  update(id: string, value: TaskFormValue): boolean {
-    return this.commit(
-      this.tasksSubject.value.map((task) =>
-        task.id === id
-          ? { ...task, ...value, title: value.title.trim(), description: value.description.trim() }
-          : task,
-      ),
+  update(id: number, value: TaskFormValue): Observable<boolean> {
+    return this.mutate(
+      this.repository.update(id, value),
+      (updated) => this.tasksSubject.value.map((task) => (task.id === id ? updated : task)),
+      'Task could not be updated. Please try again.',
     );
   }
 
   /** Removes a task by identifier using an immutable filter operation. */
-  remove(id: string): boolean {
-    return this.commit(this.tasksSubject.value.filter((task) => task.id !== id));
-  }
-
-  /** Applies workflow transitions used by Complete and Restore actions. */
-  setStatus(id: string, status: TaskStatus): boolean {
-    return this.commit(
-      this.tasksSubject.value.map((task) => (task.id === id ? { ...task, status } : task)),
+  remove(id: number): Observable<boolean> {
+    return this.mutate(
+      this.repository.remove(id),
+      () => this.tasksSubject.value.filter((task) => task.id !== id),
+      'Task could not be deleted. Please try again.',
     );
   }
 
-  /** Persists first so in-memory state changes only after a successful save. */
-  private commit(tasks: readonly Task[]): boolean {
+  /** Applies workflow transitions used by Complete and Restore actions. */
+  setStatus(id: number, status: TaskStatus): Observable<boolean> {
+    return this.mutate(
+      this.repository.setStatus(id, status),
+      (updated) => this.tasksSubject.value.map((task) => (task.id === id ? updated : task)),
+      'Task status could not be changed. Please try again.',
+    );
+  }
+
+  /** Commit an immutable state update only after the API operation succeeds. */
+  private mutate<T>(
+    request: Observable<T>,
+    updateTasks: (result: T) => readonly Task[],
+    errorMessage: string,
+  ): Observable<boolean> {
     this.errorSubject.next(null);
-    try {
-      this.repository.save(tasks);
-      this.tasksSubject.next(tasks);
-      return true;
-    } catch {
-      this.errorSubject.next('Your changes could not be saved. Please try again.');
-      return false;
-    }
+    return request.pipe(
+      tap((result) => this.tasksSubject.next(updateTasks(result))),
+      map(() => true),
+      catchError(() => {
+        this.errorSubject.next(errorMessage);
+        return of(false);
+      }),
+    );
   }
 
   /** Derives all summary values from the same collection in one pass. */

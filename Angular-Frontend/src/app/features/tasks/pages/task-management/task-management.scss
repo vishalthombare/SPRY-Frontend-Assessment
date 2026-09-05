@@ -135,6 +135,59 @@
 .task-list {
   display: grid;
 }
+.pagination {
+  min-height: 4.4rem;
+  padding: 0.85rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid v.$color-border;
+  background: #fcfbfd;
+}
+.pagination p {
+  margin: 0;
+  color: v.$color-muted;
+  font-size: 0.74rem;
+}
+.pagination p strong {
+  color: v.$color-text;
+  font-weight: 750;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.pagination-controls button {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid v.$color-border;
+  border-radius: 0.6rem;
+  color: #625669;
+  background: #fff;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+.pagination-controls button:hover:not(:disabled):not(.active) {
+  border-color: #bca8c5;
+  color: v.$color-primary;
+  background: #faf7fb;
+}
+.pagination-controls button.active {
+  border-color: v.$color-primary;
+  color: #fff;
+  background: v.$color-primary;
+  box-shadow: 0 0.3rem 0.8rem rgba(75, 9, 91, 0.18);
+}
+.pagination-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 .secondary-button {
   min-height: 2.5rem;
   padding: 0.6rem 0.9rem;
@@ -177,5 +230,12 @@
   .persistence-note {
     text-align: center;
     line-height: 1.4;
+  }
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .pagination-controls {
+    justify-content: space-between;
   }
 }

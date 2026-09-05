@@ -69,7 +69,7 @@
     />
   } @else {
     <div class="task-list">
-      @for (task of visibleTasks(); track task.id) {
+      @for (task of paginatedTasks(); track task.id) {
         <app-task-row
           [task]="task"
           [completedView]="completedView()"
@@ -80,11 +80,44 @@
         />
       }
     </div>
+    <nav class="pagination" aria-label="Task list pagination">
+      <p>
+        Showing <strong>{{ firstVisibleTask() }}–{{ lastVisibleTask() }}</strong> of
+        <strong>{{ visibleTasks().length }}</strong> tasks
+      </p>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          aria-label="Go to previous page"
+          [disabled]="currentPage() === 1"
+          (click)="goToPage(currentPage() - 1)"
+        >
+          ‹
+        </button>
+        @for (page of pageNumbers(); track page) {
+          <button
+            type="button"
+            [class.active]="page === currentPage()"
+            [attr.aria-current]="page === currentPage() ? 'page' : null"
+            [attr.aria-label]="'Go to page ' + page"
+            (click)="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+        }
+        <button
+          type="button"
+          aria-label="Go to next page"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToPage(currentPage() + 1)"
+        >
+          ›
+        </button>
+      </div>
+    </nav>
   }
 </section>
-<footer class="persistence-note">
-  ♢&nbsp; Task changes are saved locally and remain available after refresh.
-</footer>
+<footer class="persistence-note">♢&nbsp; Task changes are securely saved to your account.</footer>
 <app-task-form-dialog
   [open]="formOpen()"
   [task]="selectedTask()"
