@@ -149,8 +149,8 @@ export class TaskManagementPageComponent {
   deleteTask(): void {
     const task = this.deleteTarget();
     if (!task) return;
+    this.deleteTarget.set(null);
     this.store.remove(task.id).subscribe((removed) => {
-      this.deleteTarget.set(null);
       this.showToast(
         removed ? 'Task deleted' : 'Unable to delete task',
         removed ? 'success' : 'error',

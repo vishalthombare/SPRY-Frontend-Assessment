@@ -9,6 +9,7 @@ import {
   Observable,
   of,
   Subscription,
+  switchMap,
   tap,
 } from 'rxjs';
 import { Task, TaskCounts, TaskFormValue, TaskListQuery, TaskStatus } from '../models/task.model';
@@ -62,22 +63,9 @@ export class TaskStore {
     this.loadSubscription?.unsubscribe();
     this.loadingSubject.next(true);
     this.errorSubject.next(null);
-    this.loadSubscription = forkJoin({
-      page: this.taskApi.getTasks(query),
-      counts: this.taskApi.getSummary(),
-    })
+    this.loadSubscription = this.fetchPage(query)
       .pipe(finalize(() => this.loadingSubject.next(false)))
       .subscribe({
-        next: ({ page, counts }) => {
-          this.tasksSubject.next(page.tasks);
-          this.countsSubject.next(counts);
-          this.paginationSubject.next({
-            page: page.page,
-            pageSize: page.pageSize,
-            totalElements: page.totalElements,
-            totalPages: page.totalPages,
-          });
-        },
         error: () => {
           this.tasksSubject.next([]);
           this.errorSubject.next('Tasks could not be loaded. Please try again.');
@@ -118,12 +106,33 @@ export class TaskStore {
   private mutate<T>(request: Observable<T>, errorMessage: string): Observable<boolean> {
     this.errorSubject.next(null);
     return request.pipe(
-      tap(() => this.reload()),
+      // Do not report success until the refreshed page and summary are available.
+      switchMap(() => this.fetchPage(this.query)),
       map(() => true),
       catchError(() => {
         this.errorSubject.next(errorMessage);
         return of(false);
       }),
+    );
+  }
+
+  /** Fetch and publish one consistent page/summary snapshot. */
+  private fetchPage(query: TaskListQuery): Observable<void> {
+    return forkJoin({
+      page: this.taskApi.getTasks(query),
+      counts: this.taskApi.getSummary(),
+    }).pipe(
+      tap(({ page, counts }) => {
+        this.tasksSubject.next(page.tasks);
+        this.countsSubject.next(counts);
+        this.paginationSubject.next({
+          page: page.page,
+          pageSize: page.pageSize,
+          totalElements: page.totalElements,
+          totalPages: page.totalPages,
+        });
+      }),
+      map(() => undefined),
     );
   }
 }

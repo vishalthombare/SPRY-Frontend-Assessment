@@ -1,1 +1,9 @@
 <router-outlet />
+@if (apiRequestPending()) {
+  <div
+    class="global-api-loader"
+    role="status"
+    aria-live="polite"
+    aria-label="Processing request. Please wait."
+  ></div>
+}
