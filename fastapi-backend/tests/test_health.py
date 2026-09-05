@@ -9,7 +9,11 @@ def test_health_check() -> None:
     response = TestClient(app).get("/api/v1/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {
+        "message": None,
+        "response": {"status": "ok"},
+        "status": 200,
+    }
 
 
 def test_database_health_check() -> None:
@@ -20,5 +24,9 @@ def test_database_health_check() -> None:
         response = TestClient(app).get("/api/v1/health/database")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    assert response.json() == {
+        "message": None,
+        "response": {"status": "ok"},
+        "status": 200,
+    }
     connection_check.assert_awaited_once()

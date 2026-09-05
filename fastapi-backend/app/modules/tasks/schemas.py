@@ -83,9 +83,3 @@ class TaskSummaryResponse(BaseModel):
     pending: int
     in_progress: int
     completed: int
-
-
-class TaskDeleteResponse(BaseModel):
-    """Confirmation returned after a soft deletion."""
-
-    message: str

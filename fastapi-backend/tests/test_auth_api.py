@@ -16,6 +16,8 @@ def test_me_requires_bearer_token() -> None:
     response = client.get("/api/v1/auth/me")
 
     assert response.status_code == 401
+    assert response.json()["status"] == 401
+    assert response.json()["response"] is None
     assert response.headers["www-authenticate"] == "Bearer"
 
 
@@ -31,7 +33,11 @@ def test_login_rejects_invalid_credentials() -> None:
         )
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid email or password."}
+    assert response.json() == {
+        "message": "Invalid email or password.",
+        "response": None,
+        "status": 401,
+    }
 
 
 def test_login_returns_token_and_safe_user() -> None:
@@ -56,12 +62,14 @@ def test_login_returns_token_and_safe_user() -> None:
 
     assert response.status_code == 200
     body = response.json()
-    assert body["token_type"] == "bearer"
-    assert body["access_token"]
-    assert body["refresh_token"]
-    assert body["user"]["id"] == 7
-    assert body["user"]["is_superuser"] is True
-    assert "password_hash" not in body["user"]
+    assert body["status"] == 200
+    assert body["message"] == "Signed in successfully."
+    assert body["response"]["token_type"] == "bearer"
+    assert body["response"]["access_token"]
+    assert body["response"]["refresh_token"]
+    assert body["response"]["user"]["id"] == 7
+    assert body["response"]["user"]["is_superuser"] is True
+    assert "password_hash" not in body["response"]["user"]
 
 
 def test_refresh_rotates_token_pair() -> None:
@@ -90,8 +98,8 @@ def test_refresh_rotates_token_pair() -> None:
         app.dependency_overrides.clear()
 
     assert response.status_code == 200
-    assert response.json()["access_token"]
-    assert response.json()["refresh_token"]
+    assert response.json()["response"]["access_token"]
+    assert response.json()["response"]["refresh_token"]
 
 
 def test_logout_increments_auth_version() -> None:
@@ -123,6 +131,10 @@ def test_logout_increments_auth_version() -> None:
         app.dependency_overrides.clear()
 
     assert response.status_code == 200
-    assert response.json() == {"message": "Signed out successfully."}
+    assert response.json() == {
+        "message": "Signed out successfully.",
+        "response": None,
+        "status": 200,
+    }
     assert user.auth_version == 3
     session.commit.assert_awaited_once()

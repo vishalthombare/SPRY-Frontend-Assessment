@@ -36,6 +36,12 @@ app/
 Each feature module owns its HTTP contract and business operations. Shared infrastructure and
 cross-module database models remain centralized to avoid circular dependencies.
 
+## Response format
+
+Successful single-object responses use `message`, `response`, and the HTTP `status` code. List
+responses place their array in `response.content`. Expected HTTP and validation errors use the
+same top-level envelope so frontend consumers can handle every API consistently.
+
 ## Quality checks
 
 ```bash
