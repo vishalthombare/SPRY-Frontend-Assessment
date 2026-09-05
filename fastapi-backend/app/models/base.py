@@ -1,3 +1,5 @@
+"""Declarative model base and reusable lifecycle audit columns."""
+
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, MetaData, func
@@ -27,6 +29,7 @@ class AuditMixin:
     updated_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
+    # Audit user IDs are nullable so system/bootstrap operations remain possible.
     created_by: Mapped[int | None] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
@@ -40,6 +43,7 @@ class AuditMixin:
     is_active: Mapped[bool] = mapped_column(
         Boolean, default=True, server_default="true", nullable=False
     )
+    # Soft deletion preserves records for auditing while hiding them from normal queries.
     is_deleted: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false", index=True, nullable=False
     )

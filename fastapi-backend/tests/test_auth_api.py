@@ -3,11 +3,11 @@ from unittest.mock import AsyncMock, patch
 
 from fastapi.testclient import TestClient
 
-from app.api.dependencies import get_current_user
 from app.core.database import get_db_session
 from app.core.security import create_access_token, create_refresh_token
 from app.main import app
 from app.models.user import User
+from app.modules.auth.dependencies import get_current_user
 
 client = TestClient(app)
 
@@ -21,7 +21,7 @@ def test_me_requires_bearer_token() -> None:
 
 def test_login_rejects_invalid_credentials() -> None:
     with patch(
-        "app.api.v1.auth.authenticate_user",
+        "app.modules.auth.router.authenticate_user",
         new_callable=AsyncMock,
         return_value=None,
     ):
@@ -45,7 +45,7 @@ def test_login_returns_token_and_safe_user() -> None:
         created_date=datetime.now(UTC),
     )
     with patch(
-        "app.api.v1.auth.authenticate_user",
+        "app.modules.auth.router.authenticate_user",
         new_callable=AsyncMock,
         return_value=user,
     ):

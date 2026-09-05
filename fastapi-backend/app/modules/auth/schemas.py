@@ -1,3 +1,5 @@
+"""Validated authentication request and safe public response contracts."""
+
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
@@ -13,6 +15,7 @@ class LoginRequest(BaseModel):
 class AuthenticatedUserResponse(BaseModel):
     """Safe authenticated-user fields returned to clients."""
 
+    # from_attributes allows Pydantic to serialize a SQLAlchemy User directly.
     model_config = ConfigDict(from_attributes=True)
 
     id: int

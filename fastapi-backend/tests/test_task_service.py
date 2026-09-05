@@ -5,8 +5,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task import Task, TaskStatus
-from app.schemas.task import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
-from app.services.tasks import (
+from app.modules.tasks.schemas import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
+from app.modules.tasks.service import (
     create_task,
     list_tasks,
     set_task_status,

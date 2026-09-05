@@ -1,3 +1,5 @@
+"""Alembic runtime configuration linked to application settings and model metadata."""
+
 from logging.config import fileConfig
 
 from alembic import context

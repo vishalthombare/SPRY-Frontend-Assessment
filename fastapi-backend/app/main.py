@@ -1,3 +1,5 @@
+"""FastAPI application factory and middleware registration."""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -13,6 +15,7 @@ def create_app() -> FastAPI:
         debug=settings.app_debug,
         version="0.1.0",
     )
+    # CORS allows the Angular development server to call this API in the browser.
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,

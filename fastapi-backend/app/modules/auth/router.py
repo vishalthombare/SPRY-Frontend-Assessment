@@ -1,11 +1,14 @@
+"""HTTP endpoints for login, refresh, logout, and current-user details."""
+
 import jwt
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
-from app.api.dependencies import CurrentUser, DatabaseSession
+from app.core.database import DatabaseSession
 from app.core.security import create_access_token, create_refresh_token, decode_token
 from app.models.user import User
-from app.schemas.auth import (
+from app.modules.auth.dependencies import CurrentUser
+from app.modules.auth.schemas import (
     AuthenticatedUserResponse,
     LoginRequest,
     LoginResponse,
@@ -13,7 +16,7 @@ from app.schemas.auth import (
     RefreshRequest,
     TokenResponse,
 )
-from app.services.auth import authenticate_user
+from app.modules.auth.service import authenticate_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -49,6 +52,7 @@ async def refresh(payload: RefreshRequest, session: DatabaseSession) -> TokenRes
     except jwt.InvalidTokenError as error:
         raise unauthorized from error
 
+    # The database check rejects disabled users and tokens invalidated by logout.
     user = await session.scalar(
         select(User).where(
             User.id == claims.user_id,
@@ -69,6 +73,7 @@ async def refresh(payload: RefreshRequest, session: DatabaseSession) -> TokenRes
 @router.post("/logout", response_model=LogoutResponse, summary="Sign out")
 async def logout(current_user: CurrentUser, session: DatabaseSession) -> LogoutResponse:
     """Invalidate all currently issued tokens for the authenticated user."""
+    # Existing tokens carry the old version and fail authentication immediately.
     current_user.auth_version += 1
     current_user.updated_by = current_user.id
     await session.commit()

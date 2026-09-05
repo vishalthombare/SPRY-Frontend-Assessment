@@ -1,3 +1,5 @@
+"""Typed application settings loaded from environment variables."""
+
 from functools import lru_cache
 
 from pydantic import computed_field
@@ -25,6 +27,7 @@ class Settings(BaseSettings):
     @property
     def async_database_url(self) -> str:
         """Use the asyncpg driver even when a provider supplies a standard URL."""
+        # Providers such as Neon commonly return `postgresql://`; the API uses asyncpg.
         if self.database_url.startswith("postgresql://"):
             return self.database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
         return self.database_url
@@ -33,6 +36,7 @@ class Settings(BaseSettings):
     @property
     def sync_database_url(self) -> str:
         """Use psycopg for synchronous Alembic migration commands."""
+        # Alembic runs synchronously, so it needs psycopg rather than asyncpg.
         url = self.database_url
         for scheme in ("postgresql+asyncpg://", "postgresql://"):
             if url.startswith(scheme):
@@ -49,4 +53,5 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     """Return one validated settings instance per application process."""
+    # lru_cache prevents reparsing the .env file for every request.
     return Settings()

@@ -1,3 +1,5 @@
+"""Validation and response contracts for task-management endpoints."""
+
 from datetime import date, datetime
 from enum import StrEnum
 
@@ -26,6 +28,7 @@ class TaskWriteBase(BaseModel):
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: str) -> str:
+        """Trim a title and reject values that contain only whitespace."""
         value = value.strip()
         if not value:
             raise ValueError("Title must not contain only whitespace.")
@@ -34,6 +37,7 @@ class TaskWriteBase(BaseModel):
     @field_validator("description")
     @classmethod
     def normalize_description(cls, value: str | None) -> str | None:
+        """Store empty descriptions consistently as null."""
         if value is None:
             return None
         value = value.strip()
@@ -42,6 +46,7 @@ class TaskWriteBase(BaseModel):
     @field_validator("due_date")
     @classmethod
     def validate_due_date(cls, value: date) -> date:
+        """Prevent creation or replacement with an already-expired due date."""
         if value < date.today():
             raise ValueError("Due date must be today or later.")
         return value
@@ -58,6 +63,7 @@ class TaskUpdate(TaskWriteBase):
 class TaskResponse(BaseModel):
     """Task representation returned to authenticated clients."""
 
+    # This converts SQLAlchemy Task instances into JSON responses.
     model_config = ConfigDict(from_attributes=True)
 
     id: int

@@ -1,3 +1,5 @@
+"""SQLAlchemy user model for authentication and record ownership."""
+
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, String
@@ -21,6 +23,7 @@ class User(AuditMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false", nullable=False
     )
+    # Incrementing this value invalidates every JWT issued with the previous value.
     auth_version: Mapped[int] = mapped_column(default=0, server_default="0", nullable=False)
     tasks: Mapped[list["Task"]] = relationship(
         back_populates="owner",

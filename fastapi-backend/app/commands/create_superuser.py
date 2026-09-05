@@ -1,3 +1,5 @@
+"""Interactive CLI for securely creating the initial administrator account."""
+
 import asyncio
 from getpass import getpass
 
@@ -23,6 +25,7 @@ def collect_credentials() -> tuple[str, str, str]:
     if not full_name:
         raise ValueError("Full name is required.")
 
+    # getpass prevents passwords from appearing in terminal output or shell history.
     password = getpass("Password: ")
     confirmation = getpass("Confirm password: ")
     if len(password) < 8:
@@ -47,6 +50,7 @@ async def create_superuser(email: str, full_name: str, password: str) -> User:
             is_superuser=True,
         )
         session.add(user)
+        # Flush assigns the integer ID before self-referencing audit fields are set.
         await session.flush()
         user.created_by = user.id
         user.updated_by = user.id

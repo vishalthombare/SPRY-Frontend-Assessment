@@ -1,3 +1,5 @@
+"""Password hashing and signed JWT creation/validation utilities."""
+
 from datetime import UTC, datetime, timedelta
 from typing import Literal, NamedTuple
 
@@ -19,6 +21,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     """Safely compare a plain password with its stored Argon2 hash."""
     try:
         return password_hasher.verify(password_hash, password)
+    # Invalid credentials intentionally return one generic False result.
     except (VerifyMismatchError, InvalidHashError):
         return False
 
@@ -41,6 +44,7 @@ def _create_token(
 ) -> str:
     settings = get_settings()
     issued_at = datetime.now(UTC)
+    # `sub` identifies the user; `ver` lets logout invalidate previously issued tokens.
     payload = {
         "sub": str(user_id),
         "ver": auth_version,
@@ -82,6 +86,7 @@ def decode_token(token: str, expected_type: TokenType) -> TokenClaims:
         algorithms=[settings.jwt_algorithm],
         options={"require": ["sub", "ver", "exp", "type"]},
     )
+    # Access and refresh tokens are never interchangeable.
     if payload["type"] != expected_type:
         raise jwt.InvalidTokenError("Invalid token type")
 

@@ -1,14 +1,17 @@
+"""Task queries and state changes kept separate from HTTP concerns."""
+
 from datetime import UTC, datetime
 
 from sqlalchemy import Select, asc, case, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task import Task, TaskStatus
-from app.schemas.task import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
+from app.modules.tasks.schemas import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
 
 
 def active_user_tasks(user_id: int) -> Select[tuple[Task]]:
     """Build the ownership and soft-delete boundary shared by task queries."""
+    # Every read starts from this ownership and visibility boundary.
     return select(Task).where(
         Task.user_id == user_id,
         Task.is_active.is_(True),
@@ -31,6 +34,7 @@ async def list_tasks(
     if task_status is not None:
         statement = statement.where(Task.status == task_status)
 
+    # ID is a stable tie-breaker when multiple tasks share the same due date.
     direction = asc if order == SortOrder.ASC else desc
     result = await session.scalars(statement.order_by(direction(Task.due_date), asc(Task.id)))
     return list(result.all())
@@ -64,6 +68,7 @@ async def update_task(
     payload: TaskUpdate,
 ) -> Task:
     """Replace editable fields and synchronize completion metadata."""
+    # Capture the old value so completed_date changes only with workflow state.
     previous_status = task.status
     for field, value in payload.model_dump().items():
         setattr(task, field, value)
@@ -104,6 +109,7 @@ async def set_task_status(
 
 async def summarize_tasks(session: AsyncSession, user_id: int) -> TaskSummaryResponse:
     """Calculate every summary value from the same visible task collection."""
+    # One aggregate query guarantees total and status counts use the same collection.
     statement = select(
         func.count(Task.id),
         func.sum(case((Task.status == TaskStatus.PENDING, 1), else_=0)),

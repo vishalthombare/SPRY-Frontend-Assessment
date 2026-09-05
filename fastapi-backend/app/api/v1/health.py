@@ -1,3 +1,5 @@
+"""Public health endpoints used by developers and hosting platforms."""
+
 from fastapi import APIRouter
 
 from app.core.database import check_database_connection

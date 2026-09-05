@@ -1,3 +1,5 @@
+"""SQLAlchemy task model and its fixed workflow statuses."""
+
 from datetime import date, datetime
 from enum import StrEnum
 from typing import TYPE_CHECKING
@@ -42,6 +44,7 @@ class Task(AuditMixin, Base):
         nullable=False,
     )
     due_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    # Completion time is cleared when a completed task is restored.
     completed_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     owner: Mapped["User"] = relationship(back_populates="tasks", foreign_keys=[user_id])

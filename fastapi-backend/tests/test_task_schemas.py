@@ -3,7 +3,7 @@ from datetime import date, timedelta
 import pytest
 from pydantic import ValidationError
 
-from app.schemas.task import TaskCreate
+from app.modules.tasks.schemas import TaskCreate
 
 
 def test_task_create_trims_text_fields() -> None:
