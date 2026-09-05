@@ -143,10 +143,13 @@
           </button>
         </div>
         @if (form.controls.password.touched && form.controls.password.invalid) {
-          <small>Password must be at least 6 characters.</small>
+          <small>Password must be at least 8 characters.</small>
         }
-        <button class="sign-in-button" type="submit">
-          Sign in
+        @if (errorMessage()) {
+          <p class="form-error" role="alert">{{ errorMessage() }}</p>
+        }
+        <button class="sign-in-button" type="submit" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
           <svg
             width="16"
             height="16"

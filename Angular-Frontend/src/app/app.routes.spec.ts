@@ -1,13 +1,19 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { routes } from './app.routes';
+import { AuthService } from './core/auth/auth.service';
 
 describe('application assessment routes', () => {
   let router: Router;
 
   beforeEach(() => {
-    sessionStorage.setItem('spry.authenticated', 'true');
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        { provide: AuthService, useValue: { ensureAuthenticated: () => of(true) } },
+      ],
+    });
     router = TestBed.inject(Router);
   });
 

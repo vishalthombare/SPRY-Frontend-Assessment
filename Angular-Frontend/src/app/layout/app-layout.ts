@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../core/auth/auth.service';
+import { APP_ROUTES } from '../core/constants/routes.constants';
 
 @Component({
   selector: 'app-layout',
@@ -34,7 +35,9 @@ export class AppLayout {
   }
   logout(): void {
     this.profileOpen.set(false);
-    this.auth.logout();
-    void this.router.navigate(['/login']);
+    this.auth.logout().subscribe({
+      next: () => void this.router.navigate([APP_ROUTES.login]),
+      error: () => void this.router.navigate([APP_ROUTES.login]),
+    });
   }
 }

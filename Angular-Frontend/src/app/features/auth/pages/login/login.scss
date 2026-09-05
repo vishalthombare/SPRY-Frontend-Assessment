@@ -326,6 +326,12 @@ input.invalid {
   color: #b42335;
   font-size: 0.75rem;
 }
+.form-error {
+  margin: 0.9rem 0 0;
+  color: #b42335;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
 .sign-in-button {
   margin-top: 1.35rem;
   height: 3.45rem;
@@ -343,6 +349,11 @@ input.invalid {
   transition:
     transform 0.16s,
     box-shadow 0.16s;
+}
+.sign-in-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
 }
 .sign-in-button:hover {
   box-shadow: 0 1rem 2.3rem rgba(75, 9, 91, 0.28);
