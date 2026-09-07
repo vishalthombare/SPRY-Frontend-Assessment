@@ -25,6 +25,7 @@ class TaskWriteBase(BaseModel):
     status: TaskStatus = TaskStatus.PENDING
     due_date: date
 
+    # @field_validator normalizes and validates input before services receive it.
     @field_validator("title")
     @classmethod
     def validate_title(cls, value: str) -> str:
@@ -63,7 +64,7 @@ class TaskUpdate(TaskWriteBase):
 class TaskResponse(BaseModel):
     """Task representation returned to authenticated clients."""
 
-    # This converts SQLAlchemy Task instances into JSON responses.
+    # ConfigDict(from_attributes=True) converts SQLAlchemy Task instances into JSON responses.
     model_config = ConfigDict(from_attributes=True)
 
     id: int

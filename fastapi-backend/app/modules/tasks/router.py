@@ -34,6 +34,7 @@ async def owned_task_or_404(session: DatabaseSession, user_id: int, task_id: int
     return task
 
 
+# Each route decorator registers an operation and its typed OpenAPI response contract.
 @router.get(
     "",
     response_model=ApiResponse[PaginatedResponse[TaskResponse]],
@@ -42,6 +43,7 @@ async def owned_task_or_404(session: DatabaseSession, user_id: int, task_id: int
 async def get_tasks(
     current_user: CurrentUser,
     session: DatabaseSession,
+    # Annotated Query metadata makes validation rules visible to FastAPI and Swagger.
     search: Annotated[str | None, Query(max_length=200)] = None,
     task_status: Annotated[TaskStatus | None, Query(alias="status")] = None,
     sort: TaskSortField = TaskSortField.DUE_DATE,

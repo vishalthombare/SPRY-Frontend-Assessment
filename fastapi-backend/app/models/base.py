@@ -23,6 +23,7 @@ class Base(DeclarativeBase):
 class AuditMixin:
     """Standard lifecycle and user-audit columns shared by persisted records."""
 
+    # Mapped[...] gives SQLAlchemy and type checkers the same column type information.
     created_date: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

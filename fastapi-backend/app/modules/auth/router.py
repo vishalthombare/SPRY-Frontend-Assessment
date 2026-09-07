@@ -21,6 +21,7 @@ from app.schemas.response import ApiResponse, success
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+# Route decorators define the HTTP method/path and document the response in Swagger.
 @router.post("/login", response_model=ApiResponse[LoginResponse], summary="Sign in")
 async def login(payload: LoginRequest, session: DatabaseSession) -> ApiResponse[LoginResponse]:
     """Authenticate credentials and issue a bearer access token."""

@@ -11,6 +11,7 @@ from app.core.database import DatabaseSession
 from app.core.security import decode_token
 from app.models.user import User
 
+# FastAPI reads the Authorization header but lets this module return one consistent 401 response.
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
@@ -47,5 +48,5 @@ async def get_current_user(
     return user
 
 
-# Protected routes request CurrentUser instead of decoding tokens themselves.
+# Annotated + Depends tells FastAPI to inject the resolved user into protected route parameters.
 CurrentUser = Annotated[User, Depends(get_current_user)]

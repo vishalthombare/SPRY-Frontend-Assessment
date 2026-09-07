@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class ApiResponse[ResponseData](BaseModel):
-    """Standard top-level shape for successful API responses."""
+    """Generic top-level shape that keeps every successful API response predictable."""
 
     message: str | None = None
     response: ResponseData

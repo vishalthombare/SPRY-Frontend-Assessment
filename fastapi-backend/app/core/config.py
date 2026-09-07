@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Environment-backed application settings."""
+    """Environment-backed settings validated by Pydantic when the process starts."""
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     jwt_expires_minutes: int = 60
     jwt_refresh_expires_days: int = 7
 
+    # @computed_field exposes derived URLs like normal validated settings fields.
     @computed_field
     @property
     def async_database_url(self) -> str:

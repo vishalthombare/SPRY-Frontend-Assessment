@@ -9,7 +9,7 @@ from app.core.exception_handlers import register_exception_handlers
 
 
 def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
+    """Create the app, register cross-cutting behavior, and attach versioned routes."""
     settings = get_settings()
     application = FastAPI(
         title=settings.app_name,
@@ -29,4 +29,5 @@ def create_app() -> FastAPI:
     return application
 
 
+# Uvicorn imports this module-level ASGI application through `app.main:app`.
 app = create_app()
