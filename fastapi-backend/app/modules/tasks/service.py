@@ -6,7 +6,13 @@ from sqlalchemy import Select, asc, case, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task import Task, TaskStatus
-from app.modules.tasks.schemas import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
+from app.modules.tasks.schemas import (
+    SortOrder,
+    TaskCreate,
+    TaskSortField,
+    TaskSummaryResponse,
+    TaskUpdate,
+)
 
 
 def active_user_tasks(user_id: int) -> Select[tuple[Task]]:
@@ -24,6 +30,7 @@ async def list_tasks(
     user_id: int,
     search: str | None,
     task_status: TaskStatus | None,
+    sort: TaskSortField,
     order: SortOrder,
     page: int,
     page_size: int,
@@ -40,11 +47,14 @@ async def list_tasks(
     count_statement = select(func.count()).select_from(statement.order_by(None).subquery())
     total = await session.scalar(count_statement) or 0
 
-    # ID is a stable tie-breaker when multiple tasks share the same due date.
+    # ID is a stable tie-breaker when multiple tasks share the selected timestamp/date.
     direction = asc if order == SortOrder.ASC else desc
+    sort_column = Task.created_date if sort == TaskSortField.CREATED_DATE else Task.due_date
     offset = (page - 1) * page_size
     result = await session.scalars(
-        statement.order_by(direction(Task.due_date), asc(Task.id)).offset(offset).limit(page_size)
+        statement.order_by(direction(sort_column), direction(Task.id))
+        .offset(offset)
+        .limit(page_size)
     )
     return list(result.all()), total
 

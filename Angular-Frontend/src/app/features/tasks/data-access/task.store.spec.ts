@@ -91,7 +91,13 @@ describe('TaskStore', () => {
       providers: [TaskStore, { provide: TaskApiService, useValue: taskApi }],
     });
     store = TestBed.inject(TaskStore);
-    store.loadPage({ query: '', status: 'all', sort: 'asc', page: 1, completedOnly: false });
+    store.loadPage({
+      query: '',
+      status: 'all',
+      sort: 'created-desc',
+      page: 1,
+      completedOnly: false,
+    });
   });
 
   it('calculates all summary counts from the same collection', async () => {

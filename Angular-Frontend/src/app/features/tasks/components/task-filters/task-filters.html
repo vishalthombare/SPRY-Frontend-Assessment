@@ -31,9 +31,10 @@
     <svg class="leading-icon" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M8 6v12m0 0-3-3m3 3 3-3M14 7h5m-5 5h4m-4 5h3"></path>
     </svg>
-    <select formControlName="sort" aria-label="Sort by due date">
-      <option value="asc">Due date: earliest</option>
-      <option value="desc">Due date: latest</option>
+    <select formControlName="sort" aria-label="Sort tasks">
+      <option value="created-desc">Created: newest</option>
+      <option value="due-asc">Due date: earliest</option>
+      <option value="due-desc">Due date: latest</option>
     </select>
     <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9 5 5 5-5"></path></svg>
   </label>

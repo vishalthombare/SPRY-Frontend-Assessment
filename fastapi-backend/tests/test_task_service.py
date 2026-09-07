@@ -5,7 +5,13 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.task import Task, TaskStatus
-from app.modules.tasks.schemas import SortOrder, TaskCreate, TaskSummaryResponse, TaskUpdate
+from app.modules.tasks.schemas import (
+    SortOrder,
+    TaskCreate,
+    TaskSortField,
+    TaskSummaryResponse,
+    TaskUpdate,
+)
 from app.modules.tasks.service import (
     create_task,
     list_tasks,
@@ -40,6 +46,7 @@ async def test_list_tasks_applies_status_search_and_descending_due_date() -> Non
         user_id=4,
         search="API",
         task_status=TaskStatus.IN_PROGRESS,
+        sort=TaskSortField.DUE_DATE,
         order=SortOrder.DESC,
         page=2,
         page_size=10,
@@ -55,6 +62,29 @@ async def test_list_tasks_applies_status_search_and_descending_due_date() -> Non
     assert "OFFSET" in statement
     assert tasks == []
     assert total == 23
+
+
+@pytest.mark.asyncio
+async def test_list_tasks_defaults_can_order_by_newest_created_time() -> None:
+    session = mock_session()
+    scalar_result = MagicMock()
+    scalar_result.all.return_value = []
+    session.scalars.return_value = scalar_result
+    session.scalar.return_value = 0
+
+    await list_tasks(
+        session,
+        user_id=4,
+        search=None,
+        task_status=None,
+        sort=TaskSortField.CREATED_DATE,
+        order=SortOrder.DESC,
+        page=1,
+        page_size=10,
+    )
+
+    statement = str(session.scalars.await_args.args[0])
+    assert "tasks.created_date DESC" in statement
 
 
 @pytest.mark.asyncio

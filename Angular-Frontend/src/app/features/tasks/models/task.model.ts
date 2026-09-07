@@ -1,5 +1,5 @@
 export type TaskStatus = 'pending' | 'in-progress' | 'completed';
-export type DueDateSort = 'asc' | 'desc';
+export type TaskSort = 'created-desc' | 'due-asc' | 'due-desc';
 
 /** Persisted task entity owned by the task store. */
 export interface Task {
@@ -43,7 +43,7 @@ export interface TaskFormValue {
 export interface TaskFilterValue {
   query: string;
   status: TaskStatus | 'all';
-  sort: DueDateSort;
+  sort: TaskSort;
 }
 
 /** Derived summary values calculated from one task collection. */

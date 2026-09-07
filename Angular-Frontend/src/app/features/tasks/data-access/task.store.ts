@@ -40,7 +40,7 @@ export class TaskStore {
   private query: TaskListQuery = {
     query: '',
     status: 'all',
-    sort: 'asc',
+    sort: 'created-desc',
     page: 1,
     completedOnly: false,
   };

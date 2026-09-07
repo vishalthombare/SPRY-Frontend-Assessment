@@ -46,7 +46,7 @@ describe('TaskApiService', () => {
       TestBed.inject(TaskApiService).getTasks({
         query: ' API ',
         status: 'in-progress',
-        sort: 'desc',
+        sort: 'due-desc',
         page: 2,
         completedOnly: false,
       }),
@@ -56,6 +56,7 @@ describe('TaskApiService', () => {
     expect(api.options?.params).toEqual({
       page: 2,
       page_size: 10,
+      sort: 'due_date',
       order: 'desc',
       search: 'API',
       status: 'in_progress',
@@ -70,5 +71,29 @@ describe('TaskApiService', () => {
     });
     expect(result.totalElements).toBe(12);
     expect(result.totalPages).toBe(2);
+  });
+
+  it('requests newest-created ordering by default', async () => {
+    const api = new FakeApiService();
+    TestBed.configureTestingModule({
+      providers: [TaskApiService, { provide: ApiService, useValue: api }],
+    });
+
+    await firstValueFrom(
+      TestBed.inject(TaskApiService).getTasks({
+        query: '',
+        status: 'all',
+        sort: 'created-desc',
+        page: 1,
+        completedOnly: false,
+      }),
+    );
+
+    expect(api.options?.params).toEqual({
+      page: 1,
+      page_size: 10,
+      sort: 'created_date',
+      order: 'desc',
+    });
   });
 });

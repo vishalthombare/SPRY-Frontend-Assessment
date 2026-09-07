@@ -15,6 +15,7 @@ class SortOrder(StrEnum):
 
 class TaskSortField(StrEnum):
     DUE_DATE = "due_date"
+    CREATED_DATE = "created_date"
 
 
 class TaskWriteBase(BaseModel):

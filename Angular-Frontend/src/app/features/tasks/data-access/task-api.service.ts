@@ -26,10 +26,12 @@ export class TaskApiService {
 
   getTasks(query: TaskListQuery): Observable<TaskPage> {
     const status = query.completedOnly ? 'completed' : query.status;
+    const sortByDueDate = query.sort.startsWith('due-');
     const params: Record<string, string | number> = {
       page: query.page,
       page_size: APP_CONSTANTS.defaultPageSize,
-      order: query.sort,
+      sort: sortByDueDate ? 'due_date' : 'created_date',
+      order: query.sort.endsWith('asc') ? 'asc' : 'desc',
     };
     if (query.query.trim()) params['search'] = query.query.trim();
     if (status !== 'all') params['status'] = status === 'in-progress' ? 'in_progress' : status;

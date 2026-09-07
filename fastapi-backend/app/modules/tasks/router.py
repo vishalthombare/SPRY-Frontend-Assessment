@@ -46,14 +46,14 @@ async def get_tasks(
     # Annotated Query metadata makes validation rules visible to FastAPI and Swagger.
     search: Annotated[str | None, Query(max_length=200)] = None,
     task_status: Annotated[TaskStatus | None, Query(alias="status")] = None,
-    sort: TaskSortField = TaskSortField.DUE_DATE,
-    order: SortOrder = SortOrder.ASC,
+    sort: TaskSortField = TaskSortField.CREATED_DATE,
+    order: SortOrder = SortOrder.DESC,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 10,
 ) -> ApiResponse[PaginatedResponse[TaskResponse]]:
     """List the current user's tasks with assignment-required filtering and sorting."""
     tasks, total = await task_service.list_tasks(
-        session, current_user.id, search, task_status, order, page, page_size
+        session, current_user.id, search, task_status, sort, order, page, page_size
     )
     total_pages = (total + page_size - 1) // page_size
     return success(

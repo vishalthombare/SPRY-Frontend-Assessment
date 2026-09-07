@@ -40,7 +40,7 @@ export class TaskManagementPageComponent {
   private readonly filterSubject = new BehaviorSubject<TaskFilterValue>({
     query: '',
     status: 'all',
-    sort: 'asc',
+    sort: 'created-desc',
   });
 
   // Route data selects All or Completed without duplicating the page component.
