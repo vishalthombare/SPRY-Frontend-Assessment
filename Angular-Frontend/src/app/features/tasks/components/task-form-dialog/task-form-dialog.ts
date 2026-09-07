@@ -7,15 +7,13 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { VALIDATION_MESSAGES } from '../../../../core/constants/validation-messages.constants';
 import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+  VALIDATION_LIMITS,
+  VALIDATION_PATTERNS,
+} from '../../../../core/constants/validation-patterns.constants';
+import { minimumDate } from '../../../../core/validators/custom-validators';
 import { ButtonComponent } from '../../../../shared/components/button/button';
 import { DatePickerComponent } from '../../../../shared/components/date-picker/date-picker';
 import { Task, TaskFormValue, TaskStatus } from '../../models/task.model';
@@ -39,14 +37,23 @@ export class TaskFormDialogComponent implements OnChanges {
   readonly today = this.toLocalDate(new Date());
   /** One typed reactive form is shared by Add and Edit modes. */
   readonly form = inject(FormBuilder).nonNullable.group({
-    title: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
-    description: ['', Validators.maxLength(500)],
+    title: [
+      '',
+      [
+        Validators.required,
+        Validators.pattern(VALIDATION_PATTERNS.containsVisibleCharacter),
+        Validators.maxLength(VALIDATION_LIMITS.taskTitleMaxLength),
+      ],
+    ],
+    description: ['', Validators.maxLength(VALIDATION_LIMITS.taskDescriptionMaxLength)],
     dueDate: ['', [Validators.required, minimumDate(this.today)]],
     status: new FormControl<TaskStatus>('pending', {
       nonNullable: true,
       validators: Validators.required,
     }),
   });
+  readonly validationMessages = VALIDATION_MESSAGES.task;
+  readonly descriptionMaxLength = VALIDATION_LIMITS.taskDescriptionMaxLength;
   readonly titleId = `task-form-title-${Math.random().toString(36).slice(2)}`;
 
   /** Provide an immutable creation label; new tasks preview today's date. */
@@ -100,10 +107,4 @@ export class TaskFormDialogComponent implements OnChanges {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-}
-
-function minimumDate(minimum: string): ValidatorFn {
-  // ISO local dates compare chronologically as strings and avoid timezone conversion.
-  return (control: AbstractControl<string>): ValidationErrors | null =>
-    !control.value || control.value >= minimum ? null : { minimumDate: true };
 }

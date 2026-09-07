@@ -35,7 +35,7 @@
               [class.invalid]="form.controls.title.touched && form.controls.title.invalid"
             />
             @if (form.controls.title.touched && form.controls.title.invalid) {
-              <small>Enter a title containing at least one visible character.</small>
+              <small>{{ validationMessages.title }}</small>
             }
           </label>
           <label class="field field--wide"
@@ -45,7 +45,9 @@
               rows="3"
               placeholder="Add useful context"
             ></textarea>
-            <span class="character-count">{{ form.controls.description.value.length }}/500</span>
+            <span class="character-count"
+              >{{ form.controls.description.value.length }}/{{ descriptionMaxLength }}</span
+            >
           </label>
           <label class="field"
             ><span class="field-heading">Due date <small>Required</small></span
@@ -60,8 +62,8 @@
               <small>
                 {{
                   form.controls.dueDate.hasError('minimumDate')
-                    ? 'Due date cannot be before today.'
-                    : 'A due date is required.'
+                    ? validationMessages.dueDateMinimum
+                    : validationMessages.dueDateRequired
                 }}
               </small>
             }

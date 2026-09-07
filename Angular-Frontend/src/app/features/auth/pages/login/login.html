@@ -88,10 +88,16 @@
           formControlName="email"
           autocomplete="email"
           placeholder="you@example.com"
-          [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+          [class.invalid]="
+            (form.controls.email.touched && form.controls.email.invalid) ||
+            serverFieldErrors().email
+          "
+          (input)="clearServerError('email')"
         />
-        @if (form.controls.email.touched && form.controls.email.invalid) {
-          <small>Please enter a valid email address.</small>
+        @if (serverFieldErrors().email; as emailError) {
+          <small>{{ emailError }}</small>
+        } @else if (form.controls.email.touched && form.controls.email.invalid) {
+          <small>{{ validationMessages.email }}</small>
         }
         <label class="password-label" for="password">Password</label>
         <div class="password-field">
@@ -101,7 +107,11 @@
             formControlName="password"
             autocomplete="current-password"
             placeholder="Enter your password"
-            [class.invalid]="form.controls.password.touched && form.controls.password.invalid"
+            [class.invalid]="
+              (form.controls.password.touched && form.controls.password.invalid) ||
+              serverFieldErrors().password
+            "
+            (input)="clearServerError('password')"
           /><button
             type="button"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
@@ -142,8 +152,10 @@
             }
           </button>
         </div>
-        @if (form.controls.password.touched && form.controls.password.invalid) {
-          <small>Password must be at least 8 characters.</small>
+        @if (serverFieldErrors().password; as passwordError) {
+          <small>{{ passwordError }}</small>
+        } @else if (form.controls.password.touched && form.controls.password.invalid) {
+          <small>{{ validationMessages.password }}</small>
         }
         @if (errorMessage()) {
           <p class="form-error" role="alert">{{ errorMessage() }}</p>

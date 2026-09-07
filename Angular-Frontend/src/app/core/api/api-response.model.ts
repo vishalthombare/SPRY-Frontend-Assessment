@@ -5,6 +5,20 @@ export interface ApiResponse<T> {
   status: number;
 }
 
+/** One field-level validation problem returned by FastAPI. */
+export interface ApiValidationError {
+  field: string;
+  message: string;
+  code: string;
+}
+
+/** Error envelope returned for invalid API requests. */
+export interface ApiErrorResponse {
+  message: string;
+  response: { errors: ApiValidationError[] } | null;
+  status: number;
+}
+
 /** Backend container used when a response contains an array. */
 export interface CollectionResponse<T> {
   content: T[];
