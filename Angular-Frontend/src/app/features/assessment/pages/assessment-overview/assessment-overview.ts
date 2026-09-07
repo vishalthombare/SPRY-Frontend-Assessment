@@ -5,6 +5,7 @@ import { EvaluationChecklistComponent } from '../../components/evaluation-checkl
 import { RequirementsListComponent } from '../../components/requirements-list/requirements-list';
 import { SubmissionResourcesComponent } from '../../components/submission-resources/submission-resources';
 
+/** Composes all assessment information into one routed standalone page. */
 @Component({
   selector: 'app-assessment-overview',
   imports: [

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 
+/** Lazy standalone routes; the parent guard protects every workspace page. */
 export const routes: Routes = [
   {
     path: 'login',

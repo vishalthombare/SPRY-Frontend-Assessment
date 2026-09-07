@@ -5,9 +5,11 @@ import { AuthUser, TokenPair } from './auth.model';
 /** Owns browser-session auth state without making HTTP requests. */
 @Injectable({ providedIn: 'root' })
 export class AuthSessionService {
+  // Writable signals stay private so only this service can change session state.
   private readonly userState = signal<AuthUser | null>(null);
   private readonly validatedState = signal(false);
 
+  // Read-only and computed signals are safe for components to consume.
   readonly user = this.userState.asReadonly();
   readonly isAuthenticated = computed(() => Boolean(this.accessToken));
   readonly isValidated = this.validatedState.asReadonly();

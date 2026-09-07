@@ -28,13 +28,16 @@ import { Task, TaskFormValue, TaskStatus } from '../../models/task.model';
   styleUrl: './task-form-dialog.scss',
 })
 export class TaskFormDialogComponent implements OnChanges {
+  // Inputs control dialog mode/state; outputs keep persistence in the parent/store.
   @Input() open = false;
   @Input() task: Task | null = null;
   @Input() saving = false;
   @Output() readonly save = new EventEmitter<TaskFormValue>();
   @Output() readonly cancel = new EventEmitter<void>();
 
+  /** Today's local date is the minimum accepted due date. */
   readonly today = this.toLocalDate(new Date());
+  /** One typed reactive form is shared by Add and Edit modes. */
   readonly form = inject(FormBuilder).nonNullable.group({
     title: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
     description: ['', Validators.maxLength(500)],
@@ -46,6 +49,7 @@ export class TaskFormDialogComponent implements OnChanges {
   });
   readonly titleId = `task-form-title-${Math.random().toString(36).slice(2)}`;
 
+  /** Provide an immutable creation label; new tasks preview today's date. */
   get createdDate(): string {
     const value = this.task?.createdAt ?? new Date().toISOString();
     return new Intl.DateTimeFormat('en', {
@@ -72,6 +76,7 @@ export class TaskFormDialogComponent implements OnChanges {
     }
   }
 
+  /** Emit only valid form values; the parent decides how they are saved. */
   submit(): void {
     if (this.form.invalid || this.saving) {
       this.form.markAllAsTouched();

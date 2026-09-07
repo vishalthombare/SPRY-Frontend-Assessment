@@ -27,9 +27,11 @@ interface CalendarDay {
 })
 export class DatePickerComponent {
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  // Internal signals separately track the chosen date and keyboard-focus date.
   private readonly selectedValue = signal('');
   private readonly activeValue = signal(this.formatDate(new Date()));
 
+  // Inputs configure the picker; outputs notify the parent form of selection and blur.
   @Input() min = '';
   @Input() ariaLabel = 'Choose date';
   @Input() set value(value: string) {
@@ -39,6 +41,7 @@ export class DatePickerComponent {
   @Output() readonly valueChange = new EventEmitter<string>();
   @Output() readonly blurred = new EventEmitter<void>();
 
+  // Public signals update popover visibility and the calendar month rendered by the template.
   readonly open = signal(false);
   readonly visibleMonth = signal(this.startOfMonth(new Date()));
   readonly weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

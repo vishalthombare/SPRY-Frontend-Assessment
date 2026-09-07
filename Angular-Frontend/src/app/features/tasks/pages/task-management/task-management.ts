@@ -32,15 +32,18 @@ import { Task, TaskFilterValue, TaskFormValue } from '../../models/task.model';
   styleUrl: './task-management.scss',
 })
 export class TaskManagementPageComponent {
+  // Injected route services expose URL state; TaskStore owns server-backed task state.
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly store = inject(TaskStore);
+  // BehaviorSubject remembers the latest filters when moving between server pages.
   private readonly filterSubject = new BehaviorSubject<TaskFilterValue>({
     query: '',
     status: 'all',
     sort: 'asc',
   });
 
+  // Route data selects All or Completed without duplicating the page component.
   readonly completedView = toSignal(
     this.route.data.pipe(map((data) => data['completedOnly'] === true)),
     { initialValue: false },
@@ -50,6 +53,7 @@ export class TaskManagementPageComponent {
     this.route.queryParamMap.pipe(map((params) => params.get('create') === 'true')),
     { initialValue: false },
   );
+  // Store observables become signals so the template can read their latest values directly.
   readonly counts = toSignal(this.store.counts$, {
     initialValue: { total: 0, pending: 0, inProgress: 0, completed: 0 },
   });
@@ -59,6 +63,7 @@ export class TaskManagementPageComponent {
   readonly pagination = toSignal(this.store.pagination$, {
     initialValue: { page: 1, pageSize: 10, totalElements: 0, totalPages: 0 },
   });
+  // Computed signals derive pagination labels without storing duplicate state.
   readonly currentPage = computed(() => this.pagination().page);
   readonly totalPages = computed(() => this.pagination().totalPages);
   readonly pageNumbers = computed(() =>
@@ -73,6 +78,7 @@ export class TaskManagementPageComponent {
     Math.min(this.currentPage() * this.pagination().pageSize, this.pagination().totalElements),
   );
 
+  // Writable signals hold temporary dialog and feedback state owned only by this page.
   readonly formOpen = signal(false);
   readonly selectedTask = signal<Task | null>(null);
   readonly deleteTarget = signal<Task | null>(null);
@@ -86,6 +92,7 @@ export class TaskManagementPageComponent {
 
   constructor() {
     // React to navigation from the global Create task action, including same-page navigation.
+    // Route-tab changes request the corresponding first server page.
     effect(() => {
       if (this.createRequested()) this.addTask();
     });
@@ -101,11 +108,13 @@ export class TaskManagementPageComponent {
     });
   }
 
+  /** Apply filters and return to the first server page. */
   setFilters(filters: TaskFilterValue): void {
     this.filterSubject.next(filters);
     this.store.loadPage({ ...filters, page: 1, completedOnly: this.completedView() });
   }
 
+  /** Request a valid server page while preserving the current filters. */
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.store.loadPage({
@@ -114,20 +123,24 @@ export class TaskManagementPageComponent {
       completedOnly: this.completedView(),
     });
   }
+  /** Open the shared form in Add mode. */
   addTask(): void {
     this.selectedTask.set(null);
     this.formOpen.set(true);
   }
+  /** Open the same shared form in Edit mode with an existing task. */
   editTask(task: Task): void {
     this.selectedTask.set(task);
     this.formOpen.set(true);
   }
+  /** Close the form unless a save request is still active. */
   closeForm(): void {
     if (!this.saving()) {
       this.formOpen.set(false);
       this.clearCreateRequest();
     }
   }
+  /** Create or update through the store and report the result to the user. */
   saveTask(value: TaskFormValue): void {
     if (this.saving()) return;
     this.saving.set(true);
@@ -146,6 +159,7 @@ export class TaskManagementPageComponent {
       } else this.showToast('Unable to save task', 'error', 'Please try again.');
     });
   }
+  /** Confirmed deletion is sent to the backend as a soft delete. */
   deleteTask(): void {
     const task = this.deleteTarget();
     if (!task) return;
@@ -158,6 +172,7 @@ export class TaskManagementPageComponent {
       );
     });
   }
+  /** Move a task into the completed workflow state. */
   completeTask(task: Task): void {
     this.store.setStatus(task.id, 'completed').subscribe((saved) => {
       this.showToast(
@@ -167,6 +182,7 @@ export class TaskManagementPageComponent {
       );
     });
   }
+  /** Return a completed task to the in-progress workflow state. */
   restoreTask(task: Task): void {
     this.store.setStatus(task.id, 'in-progress').subscribe((saved) => {
       this.showToast(

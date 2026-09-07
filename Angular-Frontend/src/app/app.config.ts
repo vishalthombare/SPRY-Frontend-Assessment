@@ -8,6 +8,7 @@ import { apiLoadingInterceptor } from './core/api/api-loading.interceptor';
 import { authInterceptor } from './core/auth/auth.interceptor';
 import { environment } from '../environments/environment';
 
+/** Bootstraps router, HTTP interceptors, and environment-dependent API configuration. */
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),

@@ -5,6 +5,7 @@ import { TaskStore } from './data-access/task.store';
 // Route-level providers keep task state scoped to the Task Management feature.
 const taskProviders = [TaskStore, TaskApiService];
 
+/** Both task tabs reuse one standalone page and differ only through route data. */
 export const TASK_ROUTES: Routes = [
   {
     path: '',

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ButtonComponent } from '../button/button';
 
+/** Accessible reusable confirmation modal used before destructive actions. */
 @Component({
   selector: 'app-confirm-dialog',
   imports: [ButtonComponent],
@@ -8,6 +9,7 @@ import { ButtonComponent } from '../button/button';
   styleUrl: './confirm-dialog.scss',
 })
 export class ConfirmDialogComponent {
+  // The parent owns open state and responds to the confirm/cancel output events.
   @Input() open = false;
   @Input() title = 'Confirm action';
   @Input() message = 'Are you sure you want to continue?';

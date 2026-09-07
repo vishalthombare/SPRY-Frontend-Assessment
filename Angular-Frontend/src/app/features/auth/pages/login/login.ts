@@ -7,6 +7,7 @@ import { finalize } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { APP_ROUTES } from '../../../../core/constants/routes.constants';
 
+/** Public standalone sign-in page connected to the FastAPI authentication flow. */
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule],
@@ -14,14 +15,17 @@ import { APP_ROUTES } from '../../../../core/constants/routes.constants';
   styleUrl: './login.scss',
 })
 export class Login {
+  // inject() obtains dependencies without constructor boilerplate.
   private readonly auth = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  /** Reactive form owns validation and produces the typed login request. */
   readonly form = inject(FormBuilder).nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
+  // Signals hold local UI state and update only the template bindings that consume them.
   readonly showPassword = signal(false);
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
