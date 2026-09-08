@@ -2,4 +2,5 @@
 export const APP_CONSTANTS = {
   apiTimeoutMs: 30_000,
   defaultPageSize: 10,
+  toastDurationMs: 4_000,
 } as const;
