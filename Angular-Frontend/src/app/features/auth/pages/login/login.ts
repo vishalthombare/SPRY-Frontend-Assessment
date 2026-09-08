@@ -40,7 +40,11 @@ export class Login {
   readonly showPassword = signal(false);
   readonly submitted = signal(false);
   readonly isSubmitting = signal(false);
-  readonly errorMessage = signal<string | null>(null);
+  readonly errorMessage = signal<string | null>(
+    this.route.snapshot.queryParamMap.get('sessionExpired') === 'true'
+      ? this.validationMessages.sessionExpired
+      : null,
+  );
   readonly serverFieldErrors = signal<Partial<Record<LoginField, string>>>({});
 
   /** Validate credentials, prevent duplicate submits, and navigate only after API success. */

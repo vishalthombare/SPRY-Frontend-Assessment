@@ -18,9 +18,11 @@ describe('Login', () => {
   let component: Login;
   let auth: FakeAuthService;
   let fixture: ComponentFixture<Login>;
+  let routeQueryParams: ReturnType<typeof convertToParamMap>;
 
   beforeEach(() => {
     auth = new FakeAuthService();
+    routeQueryParams = convertToParamMap({});
     TestBed.configureTestingModule({
       imports: [Login],
       providers: [
@@ -28,7 +30,13 @@ describe('Login', () => {
         { provide: Router, useValue: { navigateByUrl: vi.fn() } },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { queryParamMap: convertToParamMap({}) } },
+          useValue: {
+            snapshot: {
+              get queryParamMap() {
+                return routeQueryParams;
+              },
+            },
+          },
         },
       ],
     });
@@ -40,6 +48,18 @@ describe('Login', () => {
   it('does not show validation errors on initial render', () => {
     expect(fixture.nativeElement.querySelectorAll('.field-error')).toHaveLength(0);
     expect(fixture.nativeElement.querySelector('[aria-invalid="true"]')).toBeNull();
+  });
+
+  it('explains when an expired session requires a new sign-in', () => {
+    fixture.destroy();
+    routeQueryParams = convertToParamMap({ sessionExpired: 'true' });
+    fixture = TestBed.createComponent(Login);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.form-error').textContent.trim()).toBe(
+      'Your session has expired. Please sign in again.',
+    );
   });
 
   it('presents one reviewer instruction and positions FastAPI as optional', () => {

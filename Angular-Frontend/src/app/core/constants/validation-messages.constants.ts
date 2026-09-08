@@ -5,6 +5,7 @@ export const VALIDATION_MESSAGES = {
   auth: {
     email: 'Please enter a valid email address.',
     password: `Password must be at least ${VALIDATION_LIMITS.passwordMinLength} characters.`,
+    sessionExpired: 'Your session has expired. Please sign in again.',
   },
   task: {
     title: 'Enter a title containing at least one visible character.',
