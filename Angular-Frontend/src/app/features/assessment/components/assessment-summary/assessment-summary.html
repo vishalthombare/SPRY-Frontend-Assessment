@@ -1,20 +1,45 @@
 <section class="summary-grid" aria-label="Assessment summary">
   <article>
-    <span class="icon lime">✓</span>
+    <span class="icon lime" aria-hidden="true">✓</span>
     <div><small>Assessment status</small><strong>Submission prepared</strong></div>
     <em>Complete</em>
   </article>
   <article>
-    <span class="icon amber">◷</span>
-    <div><small>Task progress</small><strong>2 of 8 completed</strong></div>
+    @let progress = taskProgress();
+    <span class="icon amber" aria-hidden="true">◷</span>
+    <div>
+      <small>Task progress</small>
+      <strong class="task-progress" aria-live="polite" aria-atomic="true">
+        @switch (progress.status) {
+          @case ('loading') {
+            Loading task progress…
+          }
+          @case ('error') {
+            Task progress unavailable
+          }
+          @case ('loaded') {
+            @if (progress.counts.total === 0) {
+              No tasks available
+            } @else {
+              {{ progress.counts.completed }} of {{ progress.counts.total }} completed
+            }
+          }
+        }
+      </strong>
+      @if (progress.status === 'loaded' && progress.counts.total > 0) {
+        <small class="task-breakdown">
+          {{ progress.counts.pending }} pending · {{ progress.counts.inProgress }} in progress
+        </small>
+      }
+    </div>
   </article>
   <article>
-    <span class="icon violet">&lt;/&gt;</span>
-    <div><small>Technology stack</small><strong>Angular · TypeScript</strong></div>
+    <span class="icon violet" aria-hidden="true">&lt;/&gt;</span>
+    <div><small>Technology stack</small><strong>Angular 21 · TypeScript</strong></div>
   </article>
   <article>
-    <span class="icon lime">◇</span>
+    <span class="icon lime" aria-hidden="true">◇</span>
     <div><small>Submission readiness</small><strong>Ready for review</strong></div>
-    <em>75%</em>
+    <em>100%</em>
   </article>
 </section>

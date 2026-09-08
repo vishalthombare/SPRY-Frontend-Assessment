@@ -8,39 +8,23 @@
     <span>3 of 3 available</span>
   </header>
   <div class="resource-grid">
-    <article>
-      <span class="icon">↗</span>
-      <div>
-        <small>● Available</small>
-        <h3>Live application</h3>
-        <p>Review the deployed responsive experience.</p>
-      </div>
-      <button type="button">Open <span>›</span></button>
-    </article>
-    <article>
-      <span class="icon">⑂</span>
-      <div>
-        <small>● Available</small>
-        <h3>Git repository</h3>
-        <p>Inspect structure, commits and implementation.</p>
-      </div>
-      <a
-        class="resource-action"
-        [href]="repositoryUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="View the Git repository (opens in a new tab)"
-        >View <span>↗</span></a
-      >
-    </article>
-    <article>
-      <span class="icon">≡</span>
-      <div>
-        <small>● Ready</small>
-        <h3>README and technical documentation</h3>
-        <p>Read setup, decisions and testing notes.</p>
-      </div>
-      <button type="button">Read <span>›</span></button>
-    </article>
+    @for (resource of resources; track resource.url) {
+      <article>
+        <span class="icon" aria-hidden="true">↗</span>
+        <div>
+          <small>{{ resource.label }}</small>
+          <h3>{{ resource.title }}</h3>
+          <p>{{ resource.description }}</p>
+        </div>
+        <a
+          class="resource-action"
+          [href]="resource.url"
+          target="_blank"
+          rel="noopener noreferrer"
+          [attr.aria-label]="resource.action + ': ' + resource.title + ' (opens in a new tab)'"
+          >{{ resource.action }} <span aria-hidden="true">↗</span></a
+        >
+      </article>
+    }
   </div>
 </section>

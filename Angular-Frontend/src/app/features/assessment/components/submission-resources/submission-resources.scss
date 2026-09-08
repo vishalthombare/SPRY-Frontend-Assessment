@@ -78,7 +78,7 @@ header > span {
   font-size: 0.66rem;
   line-height: 1.45;
 }
-.resource-grid :is(button, .resource-action) {
+.resource-action {
   grid-column: 1/-1;
   min-height: 2.05rem;
   display: flex;
@@ -102,7 +102,7 @@ header > span {
   outline: 3px solid rgba(v.$color-primary, 0.18);
   outline-offset: 2px;
 }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   header {
     align-items: flex-start;
     flex-direction: column;

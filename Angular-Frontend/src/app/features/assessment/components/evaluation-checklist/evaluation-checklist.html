@@ -4,30 +4,31 @@
     <h2>Implementation approach</h2>
     <div class="technical-list">
       <div>
-        <b>&lt;/&gt;</b
+        <b aria-hidden="true">&lt;/&gt;</b
         ><span
           ><strong>Angular standalone · TypeScript</strong
           ><small>Feature-focused reusable components</small></span
         >
       </div>
       <div>
-        <b>↻</b
+        <b aria-hidden="true">↻</b
         ><span
-          ><strong>RxJS BehaviorSubject</strong
-          ><small>Immutable state and derived selectors</small></span
+          ><strong>RxJS service state</strong
+          ><small>Observable API state and derived task data</small></span
         >
       </div>
       <div>
-        <b>≡</b
+        <b aria-hidden="true">≡</b
         ><span
           ><strong>Reactive Forms · SCSS</strong
-          ><small>Validated, responsive interface</small></span
+          ><small>Validated, responsive and accessible interface</small></span
         >
       </div>
       <div>
-        <b>◇</b
+        <b aria-hidden="true">◇</b
         ><span
-          ><strong>Repository abstraction</strong><small>Local-storage persistence</small></span
+          ><strong>API service abstraction</strong
+          ><small>FastAPI-backed task persistence</small></span
         >
       </div>
     </div>
@@ -36,10 +37,34 @@
     <span class="section-label">Review focus</span>
     <h2>Evaluation criteria</h2>
     <ul>
-      <li><span>✓</span>Component structure and reusability</li>
-      <li><span>✓</span>State-management approach</li>
-      <li><span>✓</span>Input validation and error handling</li>
-      <li><span>✓</span>Responsive and user-friendly design</li>
+      <li><span aria-hidden="true">✓</span>Component structure and reusability</li>
+      <li><span aria-hidden="true">✓</span>State-management approach</li>
+      <li><span aria-hidden="true">✓</span>Input validation and error handling</li>
+      <li><span aria-hidden="true">✓</span>Responsive and user-friendly design</li>
+      <li><span aria-hidden="true">✓</span>Authentication guard and HTTP interceptor</li>
+      <li><span aria-hidden="true">✓</span>JWT session and server-side pagination</li>
     </ul>
   </section>
 </div>
+<section class="production-integration" aria-labelledby="production-integration-title">
+  <span class="section-label">Optional extension</span>
+  <h2 id="production-integration-title">Production Integration</h2>
+  <p>
+    The Angular frontend is the primary assessment deliverable. A FastAPI backend was added as an
+    optional extension to demonstrate production API integration.
+  </p>
+  <div class="integration-grid">
+    <article>
+      <h3>Frontend</h3>
+      <p>Angular 21 · TypeScript · RxJS · Reactive Forms · SCSS</p>
+    </article>
+    <article>
+      <h3>Optional backend</h3>
+      <p>FastAPI · PostgreSQL · SQLAlchemy · JWT authentication</p>
+    </article>
+    <article>
+      <h3>Deployment</h3>
+      <p>Frontend: Cloudflare Workers · API: Render · Database: Neon PostgreSQL</p>
+    </article>
+  </div>
+</section>

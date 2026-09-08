@@ -53,6 +53,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.task-progress {
+  white-space: normal;
+}
+.summary-grid .task-breakdown {
+  color: #6f6474;
+  font-size: 0.6rem;
+}
 .summary-grid em {
   align-self: start;
   padding: 0.28rem 0.42rem;
