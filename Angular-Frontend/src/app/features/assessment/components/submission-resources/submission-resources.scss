@@ -78,7 +78,7 @@ header > span {
   font-size: 0.66rem;
   line-height: 1.45;
 }
-.resource-grid button {
+.resource-grid :is(button, .resource-action) {
   grid-column: 1/-1;
   min-height: 2.05rem;
   display: flex;
@@ -92,6 +92,15 @@ header > span {
   cursor: pointer;
   font-size: 0.68rem;
   font-weight: 700;
+  text-decoration: none;
+}
+.resource-action:hover {
+  border-color: rgba(v.$color-primary, 0.28);
+  color: v.$color-primary;
+}
+.resource-action:focus-visible {
+  outline: 3px solid rgba(v.$color-primary, 0.18);
+  outline-offset: 2px;
 }
 @media (max-width: 760px) {
   header {

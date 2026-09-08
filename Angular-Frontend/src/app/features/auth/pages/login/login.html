@@ -24,6 +24,9 @@
         Explore the implementation, review the approach, and access the source repository from one
         secure workspace prepared for SPRY.
       </p>
+      <p class="brand-footer technology-line">
+        Angular 21 frontend <span>•</span> Optional FastAPI production integration
+      </p>
       <div class="challenge-card">
         <div class="challenge-icon" aria-hidden="true">&lt;/&gt;</div>
         <div class="challenge-copy">
@@ -78,27 +81,31 @@
         </div>
         <p>Reviewer access</p>
         <h2 id="login-title">Sign in to review the assignment</h2>
-        <span>Use the reviewer credentials provided with this submission.</span>
+        <span
+          >Use the dedicated reviewer credentials included in the submission email or repository
+          README.</span
+        >
       </div>
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        @let emailErrorMessage = emailError();
         <label for="email">Email address</label>
         <input
           id="email"
           type="email"
           formControlName="email"
-          autocomplete="email"
+          autocomplete="username"
           placeholder="you@example.com"
-          [class.invalid]="
-            (form.controls.email.touched && form.controls.email.invalid) ||
-            serverFieldErrors().email
-          "
+          [class.invalid]="emailErrorMessage"
+          [attr.aria-invalid]="emailErrorMessage ? 'true' : null"
+          [attr.aria-describedby]="emailErrorMessage ? 'email-error' : null"
           (input)="clearServerError('email')"
         />
-        @if (serverFieldErrors().email; as emailError) {
-          <small>{{ emailError }}</small>
-        } @else if (form.controls.email.touched && form.controls.email.invalid) {
-          <small>{{ validationMessages.email }}</small>
+        @if (emailErrorMessage) {
+          <small id="email-error" class="field-error" role="alert" aria-live="polite">
+            {{ emailErrorMessage }}
+          </small>
         }
+        @let passwordErrorMessage = passwordError();
         <label class="password-label" for="password">Password</label>
         <div class="password-field">
           <input
@@ -107,14 +114,14 @@
             formControlName="password"
             autocomplete="current-password"
             placeholder="Enter your password"
-            [class.invalid]="
-              (form.controls.password.touched && form.controls.password.invalid) ||
-              serverFieldErrors().password
-            "
+            [class.invalid]="passwordErrorMessage"
+            [attr.aria-invalid]="passwordErrorMessage ? 'true' : null"
+            [attr.aria-describedby]="passwordErrorMessage ? 'password-error' : null"
             (input)="clearServerError('password')"
           /><button
             type="button"
             [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            [attr.aria-pressed]="showPassword()"
             (click)="showPassword.set(!showPassword())"
           >
             @if (showPassword()) {
@@ -152,15 +159,20 @@
             }
           </button>
         </div>
-        @if (serverFieldErrors().password; as passwordError) {
-          <small>{{ passwordError }}</small>
-        } @else if (form.controls.password.touched && form.controls.password.invalid) {
-          <small>{{ validationMessages.password }}</small>
+        @if (passwordErrorMessage) {
+          <small id="password-error" class="field-error" role="alert" aria-live="polite">
+            {{ passwordErrorMessage }}
+          </small>
         }
         @if (errorMessage()) {
-          <p class="form-error" role="alert">{{ errorMessage() }}</p>
+          <p class="form-error" role="alert" aria-live="assertive">{{ errorMessage() }}</p>
         }
-        <button class="sign-in-button" type="submit" [disabled]="isSubmitting()">
+        <button
+          class="sign-in-button"
+          type="submit"
+          [disabled]="isSubmitting()"
+          [attr.aria-busy]="isSubmitting()"
+        >
           {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
           <svg
             width="16"
@@ -177,7 +189,13 @@
           </svg>
         </button>
       </form>
-      <div class="repository-note">
+      <a
+        class="repository-note"
+        [href]="repositoryUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="View the SPRY Frontend Assessment repository on GitHub (opens in a new tab)"
+      >
         <span aria-hidden="true">
           <svg
             width="19"
@@ -197,15 +215,11 @@
           </svg>
         </span>
         <div>
-          <strong>The review workspace is ready</strong
-          ><small
-            >Live application, technical notes and source code are available after sign-in.</small
-          >
+          <strong>View the source repository</strong
+          ><small>Inspect the implementation, commit history and technical documentation.</small>
         </div>
-      </div>
-      <p class="support-copy">
-        Need access? Contact Vishal Thombare using the details shared with this submission.
-      </p>
+        <span class="external-arrow" aria-hidden="true">↗</span>
+      </a>
     </div>
     <footer class="login-footer">
       Independent interview assignment · Not an official SPRY Therapeutics product
