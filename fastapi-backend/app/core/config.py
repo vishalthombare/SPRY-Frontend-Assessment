@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_expires_minutes: int = 60
     jwt_refresh_expires_days: int = 7
+    rate_limit_enabled: bool = True
+    global_rate_limit: str = "100/minute"
+    login_rate_limit: str = "5/15minutes"
+    refresh_rate_limit: str = "20/minute"
+    logout_rate_limit: str = "10/minute"
+    task_write_rate_limit: str = "30/minute"
 
     # @computed_field exposes derived URLs like normal validated settings fields.
     @computed_field

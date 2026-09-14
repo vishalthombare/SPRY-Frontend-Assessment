@@ -1,13 +1,14 @@
 """HTTP endpoints for login, refresh, logout, and current-user details."""
 
 import jwt
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 
 from app.core.database import DatabaseSession
 from app.core.security import create_access_token, create_refresh_token, decode_token
 from app.models.user import User
 from app.modules.auth.dependencies import CurrentUser
+from app.modules.auth.rate_limits import limit_login, limit_logout, limit_refresh
 from app.modules.auth.schemas import (
     AuthenticatedUserResponse,
     LoginRequest,
@@ -22,7 +23,12 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 # Route decorators define the HTTP method/path and document the response in Swagger.
-@router.post("/login", response_model=ApiResponse[LoginResponse], summary="Sign in")
+@router.post(
+    "/login",
+    response_model=ApiResponse[LoginResponse],
+    summary="Sign in",
+    dependencies=[Depends(limit_login)],
+)
 async def login(payload: LoginRequest, session: DatabaseSession) -> ApiResponse[LoginResponse]:
     """Authenticate credentials and issue a bearer access token."""
     user = await authenticate_user(session, str(payload.email), payload.password)
@@ -43,7 +49,12 @@ async def login(payload: LoginRequest, session: DatabaseSession) -> ApiResponse[
     )
 
 
-@router.post("/refresh", response_model=ApiResponse[TokenResponse], summary="Refresh session")
+@router.post(
+    "/refresh",
+    response_model=ApiResponse[TokenResponse],
+    summary="Refresh session",
+    dependencies=[Depends(limit_refresh)],
+)
 async def refresh(payload: RefreshRequest, session: DatabaseSession) -> ApiResponse[TokenResponse]:
     """Validate a refresh token and rotate the client's token pair."""
     unauthorized = HTTPException(
@@ -76,7 +87,12 @@ async def refresh(payload: RefreshRequest, session: DatabaseSession) -> ApiRespo
     )
 
 
-@router.post("/logout", response_model=ApiResponse[None], summary="Sign out")
+@router.post(
+    "/logout",
+    response_model=ApiResponse[None],
+    summary="Sign out",
+    dependencies=[Depends(limit_logout)],
+)
 async def logout(current_user: CurrentUser, session: DatabaseSession) -> ApiResponse[None]:
     """Invalidate all currently issued tokens for the authenticated user."""
     # Existing tokens carry the old version and fail authentication immediately.

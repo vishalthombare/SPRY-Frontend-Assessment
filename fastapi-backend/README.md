@@ -42,6 +42,27 @@ Successful single-object responses use `message`, `response`, and the HTTP `stat
 responses place their array in `response.content`. Expected HTTP and validation errors use the
 same top-level envelope so frontend consumers can handle every API consistently.
 
+## Rate limiting
+
+The API uses an async-safe in-memory fixed-window limiter. It is appropriate for the current
+single-worker deployment and requires no database tables. Keep the production service at one
+worker until the limiter storage is replaced by a shared service such as Redis.
+
+Configure limits through environment variables:
+
+```text
+RATE_LIMIT_ENABLED=true
+GLOBAL_RATE_LIMIT=100/minute
+LOGIN_RATE_LIMIT=5/15minutes
+REFRESH_RATE_LIMIT=20/minute
+LOGOUT_RATE_LIMIT=10/minute
+TASK_WRITE_RATE_LIMIT=30/minute
+```
+
+`GET /api/v1/health`, CORS preflight requests, and non-API paths are excluded. Rejected requests
+return HTTP `429` with a `Retry-After` header. The limiter uses the client address resolved by the
+ASGI server and does not read forwarded-IP headers directly.
+
 ## Quality checks
 
 ```bash

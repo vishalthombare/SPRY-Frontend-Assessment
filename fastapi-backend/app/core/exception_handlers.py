@@ -25,14 +25,17 @@ def _validation_errors(exception: RequestValidationError) -> list[dict[str, str]
 async def http_exception_handler(_: Request, exception: HTTPException) -> JSONResponse:
     """Convert deliberate HTTP errors such as 401 and 404 into the API envelope."""
     is_text_message = isinstance(exception.detail, str)
+    content = {
+        "message": exception.detail if is_text_message else "Request failed.",
+        "response": None if is_text_message else jsonable_encoder(exception.detail),
+        "status": exception.status_code,
+    }
+    if exception.status_code == 429:
+        content["success"] = False
     return JSONResponse(
         status_code=exception.status_code,
         headers=exception.headers,
-        content={
-            "message": exception.detail if is_text_message else "Request failed.",
-            "response": None if is_text_message else jsonable_encoder(exception.detail),
-            "status": exception.status_code,
-        },
+        content=content,
     )
 
 

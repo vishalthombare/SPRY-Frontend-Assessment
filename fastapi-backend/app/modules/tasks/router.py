@@ -2,12 +2,13 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.database import DatabaseSession
 from app.models.task import Task, TaskStatus
 from app.modules.auth.dependencies import CurrentUser
 from app.modules.tasks import service as task_service
+from app.modules.tasks.rate_limits import limit_task_read, limit_task_write
 from app.modules.tasks.schemas import (
     SortOrder,
     TaskCreate,
@@ -39,6 +40,7 @@ async def owned_task_or_404(session: DatabaseSession, user_id: int, task_id: int
     "",
     response_model=ApiResponse[PaginatedResponse[TaskResponse]],
     summary="List tasks",
+    dependencies=[Depends(limit_task_read)],
 )
 async def get_tasks(
     current_user: CurrentUser,
@@ -67,7 +69,12 @@ async def get_tasks(
     )
 
 
-@router.get("/summary", response_model=ApiResponse[TaskSummaryResponse], summary="Get task summary")
+@router.get(
+    "/summary",
+    response_model=ApiResponse[TaskSummaryResponse],
+    summary="Get task summary",
+    dependencies=[Depends(limit_task_read)],
+)
 async def get_task_summary(
     current_user: CurrentUser,
     session: DatabaseSession,
@@ -77,7 +84,12 @@ async def get_task_summary(
     return success(summary)
 
 
-@router.get("/{task_id}", response_model=ApiResponse[TaskResponse], summary="Get task")
+@router.get(
+    "/{task_id}",
+    response_model=ApiResponse[TaskResponse],
+    summary="Get task",
+    dependencies=[Depends(limit_task_read)],
+)
 async def get_task(
     task_id: int, current_user: CurrentUser, session: DatabaseSession
 ) -> ApiResponse[TaskResponse]:
@@ -86,7 +98,12 @@ async def get_task(
     return success(task)
 
 
-@router.post("", response_model=ApiResponse[TaskResponse], status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=ApiResponse[TaskResponse],
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(limit_task_write)],
+)
 async def create_task(
     payload: TaskCreate,
     current_user: CurrentUser,
@@ -97,7 +114,12 @@ async def create_task(
     return success(task, status_code=status.HTTP_201_CREATED, message="Task created successfully.")
 
 
-@router.put("/{task_id}", response_model=ApiResponse[TaskResponse], summary="Update task")
+@router.put(
+    "/{task_id}",
+    response_model=ApiResponse[TaskResponse],
+    summary="Update task",
+    dependencies=[Depends(limit_task_write)],
+)
 async def update_task(
     task_id: int,
     payload: TaskUpdate,
@@ -110,7 +132,12 @@ async def update_task(
     return success(task, message="Task updated successfully.")
 
 
-@router.delete("/{task_id}", response_model=ApiResponse[None], summary="Delete task")
+@router.delete(
+    "/{task_id}",
+    response_model=ApiResponse[None],
+    summary="Delete task",
+    dependencies=[Depends(limit_task_write)],
+)
 async def delete_task(
     task_id: int,
     current_user: CurrentUser,
@@ -126,6 +153,7 @@ async def delete_task(
     "/{task_id}/complete",
     response_model=ApiResponse[TaskResponse],
     summary="Complete task",
+    dependencies=[Depends(limit_task_write)],
 )
 async def complete_task(
     task_id: int,
@@ -142,6 +170,7 @@ async def complete_task(
     "/{task_id}/restore",
     response_model=ApiResponse[TaskResponse],
     summary="Restore task",
+    dependencies=[Depends(limit_task_write)],
 )
 async def restore_task(
     task_id: int,
