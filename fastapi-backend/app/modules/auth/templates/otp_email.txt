@@ -1,0 +1,7 @@
+SPRY Assessment Review
+
+Your verification code is: {{ otp_code }}
+
+This code expires in {{ expiry_minutes }} minutes.
+
+Never share this code. If you did not attempt to sign in, you can safely ignore this email.

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your SPRY verification code</title>
+  </head>
+  <body style="margin: 0; background: #f6f3f8; color: #28152e; font-family: Arial, sans-serif">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td style="padding: 32px 16px" align="center">
+          <table
+            role="presentation"
+            width="100%"
+            cellspacing="0"
+            cellpadding="0"
+            border="0"
+            style="max-width: 560px; overflow: hidden; border: 1px solid #e5ddea; border-radius: 18px; background: #ffffff"
+          >
+            <tr>
+              <td style="padding: 24px 32px; background: #4b0759; color: #ffffff">
+                <strong style="font-size: 24px; letter-spacing: 0.04em">SPRY</strong>
+                <span style="margin-left: 12px; color: #dbc9e0">Assessment Review</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 36px 32px">
+                <p style="margin: 0 0 10px; color: #80508e; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase">
+                  Secure sign-in
+                </p>
+                <h1 style="margin: 0 0 16px; font-size: 28px; line-height: 1.25">
+                  Your verification code
+                </h1>
+                <p style="margin: 0 0 24px; color: #6e6272; font-size: 16px; line-height: 1.6">
+                  Enter this code to finish signing in to the SPRY assessment workspace.
+                </p>
+                <div style="margin: 0 0 24px; border-radius: 14px; background: #f3eafb; padding: 20px; color: #590c69; font-size: 34px; font-weight: 700; letter-spacing: 0.24em; text-align: center">
+                  {{ otp_code }}
+                </div>
+                <p style="margin: 0 0 12px; color: #6e6272; font-size: 14px; line-height: 1.6">
+                  This code expires in {{ expiry_minutes }} minutes.
+                </p>
+                <p style="margin: 0; color: #6e6272; font-size: 14px; line-height: 1.6">
+                  Never share this code. If you did not attempt to sign in, you can safely ignore this email.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

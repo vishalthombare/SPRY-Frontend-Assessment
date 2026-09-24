@@ -11,6 +11,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.config import Settings
 from app.models.auth_otp_challenge import AuthOtpChallenge
 from app.models.user import User
 
@@ -66,6 +67,17 @@ class IssuedOtp:
     challenge: AuthOtpChallenge
     code: str = field(repr=False)
     masked_email: str
+
+
+def policy_from_settings(settings: Settings) -> OtpPolicy:
+    """Build the OTP policy only when 2FA is used, allowing gradual configuration rollout."""
+    return OtpPolicy(
+        hash_secret=settings.otp_hash_secret.get_secret_value(),
+        expires_minutes=settings.otp_expires_minutes,
+        max_attempts=settings.otp_max_attempts,
+        resend_cooldown_seconds=settings.otp_resend_cooldown_seconds,
+        max_resends=settings.otp_max_resends,
+    )
 
 
 def generate_otp(length: int = 6) -> str:

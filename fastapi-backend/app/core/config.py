@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import computed_field
+from pydantic import Field, SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,6 +28,13 @@ class Settings(BaseSettings):
     refresh_rate_limit: str = "20/minute"
     logout_rate_limit: str = "10/minute"
     task_write_rate_limit: str = "30/minute"
+    resend_api_key: SecretStr = SecretStr("")
+    email_from: str = ""
+    otp_hash_secret: SecretStr = SecretStr("")
+    otp_expires_minutes: int = Field(default=5, ge=1)
+    otp_max_attempts: int = Field(default=5, ge=1)
+    otp_resend_cooldown_seconds: int = Field(default=60, ge=1)
+    otp_max_resends: int = Field(default=3, ge=1)
 
     # @computed_field exposes derived URLs like normal validated settings fields.
     @computed_field
