@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import AuditMixin, Base
 
 if TYPE_CHECKING:
+    from app.models.auth_otp_challenge import AuthOtpChallenge
     from app.models.task import Task
 
 
@@ -23,10 +24,18 @@ class User(AuditMixin, Base):
     is_superuser: Mapped[bool] = mapped_column(
         Boolean, default=False, server_default="false", nullable=False
     )
+    # Existing accounts remain on direct login until two-factor authentication is enabled.
+    is_2fa_enabled: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false", nullable=False
+    )
     # Incrementing this value invalidates every JWT issued with the previous value.
     auth_version: Mapped[int] = mapped_column(default=0, server_default="0", nullable=False)
     tasks: Mapped[list["Task"]] = relationship(
         back_populates="owner",
         foreign_keys="Task.user_id",
+        cascade="all, delete-orphan",
+    )
+    otp_challenges: Mapped[list["AuthOtpChallenge"]] = relationship(
+        back_populates="user",
         cascade="all, delete-orphan",
     )
