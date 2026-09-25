@@ -105,6 +105,7 @@ def validate_rate_limit_settings(settings: Settings) -> None:
     """Fail during application startup when any configured limit is malformed."""
     for value in (
         settings.global_rate_limit,
+        settings.register_rate_limit,
         settings.login_rate_limit,
         settings.refresh_rate_limit,
         settings.logout_rate_limit,

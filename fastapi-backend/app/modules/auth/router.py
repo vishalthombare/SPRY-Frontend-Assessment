@@ -32,6 +32,7 @@ from app.modules.auth.rate_limits import (
     limit_otp_resend,
     limit_otp_verify,
     limit_refresh,
+    limit_register,
 )
 from app.modules.auth.schemas import (
     AuthenticatedUserResponse,
@@ -40,16 +41,56 @@ from app.modules.auth.schemas import (
     LoginResult,
     OtpChallengeResponse,
     RefreshRequest,
+    RegisterRequest,
+    RegisterResponse,
     ResendOtpRequest,
     ResendOtpResponse,
     TokenResponse,
     VerifyOtpRequest,
     VerifyOtpResponse,
 )
-from app.modules.auth.service import authenticate_user
+from app.modules.auth.service import (
+    EmailAlreadyRegisteredError,
+    authenticate_user,
+    register_user,
+)
 from app.schemas.response import ApiResponse, success
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+@router.post(
+    "/register",
+    response_model=ApiResponse[RegisterResponse],
+    status_code=status.HTTP_201_CREATED,
+    summary="Register a standard user",
+    dependencies=[Depends(limit_register)],
+)
+async def register(
+    payload: RegisterRequest,
+    session: DatabaseSession,
+) -> ApiResponse[RegisterResponse]:
+    """Create a non-administrator account for API-driven registration and Swagger testing."""
+    try:
+        user = await register_user(
+            session,
+            email=str(payload.email),
+            full_name=payload.full_name,
+            password=payload.password,
+            is_2fa_enabled=payload.is_2fa_enabled,
+        )
+    except EmailAlreadyRegisteredError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists.",
+        ) from None
+
+    # Registration intentionally returns neither JWTs nor the stored password hash.
+    return success(
+        RegisterResponse.model_validate(user),
+        status_code=status.HTTP_201_CREATED,
+        message="User registered successfully.",
+    )
 
 
 # Route decorators define the HTTP method/path and document the response in Swagger.

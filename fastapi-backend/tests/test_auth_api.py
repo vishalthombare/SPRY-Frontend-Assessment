@@ -13,8 +13,83 @@ from app.models.user import User
 from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.email_service import EmailDeliveryError
 from app.modules.auth.otp_service import IssuedOtp, OtpResendError, OtpVerificationError
+from app.modules.auth.service import EmailAlreadyRegisteredError
 
 client = TestClient(app)
+
+
+def test_register_creates_standard_user_without_tokens_or_password() -> None:
+    user = User(
+        id=12,
+        email="new.user@example.com",
+        full_name="New User",
+        password_hash="must-not-be-returned",
+        is_superuser=False,
+        is_2fa_enabled=True,
+        created_date=datetime.now(UTC),
+    )
+    with patch(
+        "app.modules.auth.router.register_user",
+        new_callable=AsyncMock,
+        return_value=user,
+    ) as register_user:
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "NEW.USER@example.com",
+                "full_name": "New User",
+                "password": "secure-password",
+                "is_2fa_enabled": True,
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json()["message"] == "User registered successfully."
+    assert response.json()["status"] == 201
+    body = response.json()["response"]
+    assert body["email"] == "new.user@example.com"
+    assert body["is_2fa_enabled"] is True
+    assert "password" not in body
+    assert "password_hash" not in body
+    assert "access_token" not in body
+    call = register_user.await_args
+    assert call is not None
+    assert call.kwargs["email"] == "NEW.USER@example.com"
+    assert call.kwargs["password"] == "secure-password"
+
+
+def test_register_rejects_duplicate_email() -> None:
+    with patch(
+        "app.modules.auth.router.register_user",
+        new_callable=AsyncMock,
+        side_effect=EmailAlreadyRegisteredError(),
+    ):
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "existing@example.com",
+                "full_name": "Existing User",
+                "password": "secure-password",
+            },
+        )
+
+    assert response.status_code == 409
+    assert response.json() == {
+        "message": "An account with this email already exists.",
+        "response": None,
+        "status": 409,
+    }
+
+
+def test_register_validates_required_fields() -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={"email": "invalid", "full_name": " ", "password": "short"},
+    )
+
+    assert response.status_code == 422
+    error_fields = {error["field"] for error in response.json()["response"]["errors"]}
+    assert error_fields == {"email", "full_name", "password"}
 
 
 def test_me_requires_bearer_token() -> None:

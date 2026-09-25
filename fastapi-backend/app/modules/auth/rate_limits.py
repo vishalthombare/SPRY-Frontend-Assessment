@@ -27,6 +27,16 @@ async def limit_login(request: Request) -> None:
     )
 
 
+async def limit_register(request: Request) -> None:
+    """Limit account creation by client IP to reduce automated registration abuse."""
+    await enforce_rate_limit(
+        request,
+        scope="auth-register",
+        key=client_ip(request),
+        limit=RateLimit.parse(request.app.state.settings.register_rate_limit),
+    )
+
+
 async def limit_refresh(request: Request) -> None:
     """Limit refresh attempts by client without storing the submitted refresh token."""
     settings = request.app.state.settings

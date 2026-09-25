@@ -1,10 +1,55 @@
 """Authentication business logic independent of HTTP routing."""
 
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import verify_password
+from app.core.security import hash_password, verify_password
 from app.models.user import User
+
+
+class EmailAlreadyRegisteredError(Exception):
+    """Raised when registration cannot use an existing email address."""
+
+
+async def register_user(
+    session: AsyncSession,
+    *,
+    email: str,
+    full_name: str,
+    password: str,
+    is_2fa_enabled: bool = False,
+) -> User:
+    """Create a standard active user while keeping password storage one-way hashed."""
+    # Store one canonical representation so login and uniqueness checks stay predictable.
+    normalized_email = email.strip().lower()
+    existing_user = await session.scalar(
+        select(User.id).where(func.lower(User.email) == normalized_email)
+    )
+    if existing_user is not None:
+        raise EmailAlreadyRegisteredError
+
+    # API registration never grants administrator privileges.
+    user = User(
+        email=normalized_email,
+        full_name=full_name.strip(),
+        password_hash=hash_password(password),
+        is_superuser=False,
+        is_2fa_enabled=is_2fa_enabled,
+    )
+    session.add(user)
+    try:
+        # Flush obtains the integer primary key needed by the self-audit columns.
+        await session.flush()
+        user.created_by = user.id
+        user.updated_by = user.id
+        await session.commit()
+        await session.refresh(user)
+    except IntegrityError:
+        # The database unique constraint handles two simultaneous registrations safely.
+        await session.rollback()
+        raise EmailAlreadyRegisteredError from None
+    return user
 
 
 async def authenticate_user(session: AsyncSession, email: str, password: str) -> User | None:

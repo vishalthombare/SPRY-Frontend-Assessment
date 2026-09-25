@@ -53,6 +53,7 @@ Configure limits through environment variables:
 ```text
 RATE_LIMIT_ENABLED=true
 GLOBAL_RATE_LIMIT=100/minute
+REGISTER_RATE_LIMIT=3/hour
 LOGIN_RATE_LIMIT=5/15minutes
 REFRESH_RATE_LIMIT=20/minute
 LOGOUT_RATE_LIMIT=10/minute
@@ -98,6 +99,7 @@ pytest
 | ------ | ------------------------------- | -------------- | ------------------------ |
 | GET    | `/api/v1/health`                | Public         | API availability         |
 | GET    | `/api/v1/health/database`       | Public         | Database availability    |
+| POST   | `/api/v1/auth/register`         | Public         | Register a standard user |
 | POST   | `/api/v1/auth/login`            | Public         | Create authenticated session |
 | POST   | `/api/v1/auth/verify-otp`       | OTP challenge  | Complete two-factor sign-in |
 | POST   | `/api/v1/auth/resend-otp`       | OTP challenge  | Replace and resend email code |

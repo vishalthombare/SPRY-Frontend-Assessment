@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     jwt_refresh_expires_days: int = 7
     rate_limit_enabled: bool = True
     global_rate_limit: str = "100/minute"
+    register_rate_limit: str = "3/hour"
     login_rate_limit: str = "5/15minutes"
     refresh_rate_limit: str = "20/minute"
     logout_rate_limit: str = "10/minute"

@@ -4,7 +4,38 @@ from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+
+class RegisterRequest(BaseModel):
+    """Details accepted when creating a standard application user."""
+
+    email: EmailStr
+    full_name: str = Field(min_length=2, max_length=150)
+    password: str = Field(min_length=8, max_length=128)
+    is_2fa_enabled: bool = False
+
+    @field_validator("full_name")
+    @classmethod
+    def normalize_full_name(cls, value: str) -> str:
+        """Remove surrounding whitespace and reject a whitespace-only name."""
+        normalized = value.strip()
+        if len(normalized) < 2:
+            raise ValueError("Full name must contain at least 2 characters.")
+        return normalized
+
+
+class RegisterResponse(BaseModel):
+    """Safe account details returned after registration without credentials or tokens."""
+
+    # from_attributes lets this response serialize the newly persisted SQLAlchemy user.
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: EmailStr
+    full_name: str
+    is_2fa_enabled: bool
+    created_date: datetime
 
 
 class LoginRequest(BaseModel):
