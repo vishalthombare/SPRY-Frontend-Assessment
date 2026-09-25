@@ -19,6 +19,8 @@ client = TestClient(app)
 
 
 def test_register_creates_standard_user_without_tokens_or_password() -> None:
+    administrator = _user(is_2fa_enabled=False)
+    administrator.is_superuser = True
     user = User(
         id=12,
         email="new.user@example.com",
@@ -28,20 +30,28 @@ def test_register_creates_standard_user_without_tokens_or_password() -> None:
         is_2fa_enabled=True,
         created_date=datetime.now(UTC),
     )
-    with patch(
-        "app.modules.auth.router.register_user",
-        new_callable=AsyncMock,
-        return_value=user,
-    ) as register_user:
-        response = client.post(
-            "/api/v1/auth/register",
-            json={
-                "email": "NEW.USER@example.com",
-                "full_name": "New User",
-                "password": "secure-password",
-                "is_2fa_enabled": True,
-            },
-        )
+
+    async def override_user():
+        return administrator
+
+    app.dependency_overrides[get_current_user] = override_user
+    try:
+        with patch(
+            "app.modules.auth.router.register_user",
+            new_callable=AsyncMock,
+            return_value=user,
+        ) as register_user:
+            response = client.post(
+                "/api/v1/auth/register",
+                json={
+                    "email": "NEW.USER@example.com",
+                    "full_name": "New User",
+                    "password": "secure-password",
+                    "is_2fa_enabled": True,
+                },
+            )
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 201
     assert response.json()["message"] == "User registered successfully."
@@ -56,22 +66,33 @@ def test_register_creates_standard_user_without_tokens_or_password() -> None:
     assert call is not None
     assert call.kwargs["email"] == "NEW.USER@example.com"
     assert call.kwargs["password"] == "secure-password"
+    assert call.kwargs["created_by"] == administrator.id
 
 
 def test_register_rejects_duplicate_email() -> None:
-    with patch(
-        "app.modules.auth.router.register_user",
-        new_callable=AsyncMock,
-        side_effect=EmailAlreadyRegisteredError(),
-    ):
-        response = client.post(
-            "/api/v1/auth/register",
-            json={
-                "email": "existing@example.com",
-                "full_name": "Existing User",
-                "password": "secure-password",
-            },
-        )
+    administrator = _user(is_2fa_enabled=False)
+    administrator.is_superuser = True
+
+    async def override_user():
+        return administrator
+
+    app.dependency_overrides[get_current_user] = override_user
+    try:
+        with patch(
+            "app.modules.auth.router.register_user",
+            new_callable=AsyncMock,
+            side_effect=EmailAlreadyRegisteredError(),
+        ):
+            response = client.post(
+                "/api/v1/auth/register",
+                json={
+                    "email": "existing@example.com",
+                    "full_name": "Existing User",
+                    "password": "secure-password",
+                },
+            )
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 409
     assert response.json() == {
@@ -82,14 +103,62 @@ def test_register_rejects_duplicate_email() -> None:
 
 
 def test_register_validates_required_fields() -> None:
-    response = client.post(
-        "/api/v1/auth/register",
-        json={"email": "invalid", "full_name": " ", "password": "short"},
-    )
+    administrator = _user(is_2fa_enabled=False)
+    administrator.is_superuser = True
+
+    async def override_user():
+        return administrator
+
+    app.dependency_overrides[get_current_user] = override_user
+    try:
+        response = client.post(
+            "/api/v1/auth/register",
+            json={"email": "invalid", "full_name": " ", "password": "short"},
+        )
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 422
     error_fields = {error["field"] for error in response.json()["response"]["errors"]}
     assert error_fields == {"email", "full_name", "password"}
+
+
+def test_register_requires_access_token() -> None:
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "new.user@example.com",
+            "full_name": "New User",
+            "password": "secure-password",
+        },
+    )
+
+    assert response.status_code == 401
+    assert response.headers["www-authenticate"] == "Bearer"
+
+
+def test_register_rejects_non_superuser_access_token() -> None:
+    standard_user = _user(is_2fa_enabled=False)
+    standard_user.id = 99
+
+    async def override_user():
+        return standard_user
+
+    app.dependency_overrides[get_current_user] = override_user
+    try:
+        response = client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": "new.user@example.com",
+                "full_name": "New User",
+                "password": "secure-password",
+            },
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 403
+    assert response.json()["message"] == "Administrator access is required to register users."
 
 
 def test_me_requires_bearer_token() -> None:

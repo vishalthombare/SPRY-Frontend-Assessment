@@ -27,12 +27,12 @@ async def limit_login(request: Request) -> None:
     )
 
 
-async def limit_register(request: Request) -> None:
-    """Limit account creation by client IP to reduce automated registration abuse."""
+async def limit_register(request: Request, current_user: CurrentUser) -> None:
+    """Limit account creation by the authenticated administrator's stable user ID."""
     await enforce_rate_limit(
         request,
         scope="auth-register",
-        key=client_ip(request),
+        key=str(current_user.id),
         limit=RateLimit.parse(request.app.state.settings.register_rate_limit),
     )
 

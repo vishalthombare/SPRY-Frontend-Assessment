@@ -69,8 +69,15 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 async def register(
     payload: RegisterRequest,
     session: DatabaseSession,
+    current_user: CurrentUser,
 ) -> ApiResponse[RegisterResponse]:
-    """Create a non-administrator account for API-driven registration and Swagger testing."""
+    """Allow an authenticated administrator to create a standard application account."""
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access is required to register users.",
+        )
+
     try:
         user = await register_user(
             session,
@@ -78,6 +85,7 @@ async def register(
             full_name=payload.full_name,
             password=payload.password,
             is_2fa_enabled=payload.is_2fa_enabled,
+            created_by=current_user.id,
         )
     except EmailAlreadyRegisteredError:
         raise HTTPException(

@@ -18,10 +18,6 @@ async def test_register_user_normalizes_email_hashes_password_and_sets_audit_fie
     session.refresh = AsyncMock()
     session.rollback = AsyncMock()
 
-    def assign_primary_key() -> None:
-        session.add.call_args.args[0].id = 25
-
-    session.flush.side_effect = assign_primary_key
     with patch("app.modules.auth.service.hash_password", return_value="argon2-hash") as hasher:
         user = await register_user(
             session,
@@ -29,6 +25,7 @@ async def test_register_user_normalizes_email_hashes_password_and_sets_audit_fie
             full_name=" New User ",
             password="secure-password",
             is_2fa_enabled=True,
+            created_by=7,
         )
 
     assert user.email == "new.user@example.com"
@@ -36,8 +33,8 @@ async def test_register_user_normalizes_email_hashes_password_and_sets_audit_fie
     assert user.password_hash == "argon2-hash"
     assert user.is_superuser is False
     assert user.is_2fa_enabled is True
-    assert user.created_by == 25
-    assert user.updated_by == 25
+    assert user.created_by == 7
+    assert user.updated_by == 7
     hasher.assert_called_once_with("secure-password")
     session.commit.assert_awaited_once()
     session.refresh.assert_awaited_once_with(user)
@@ -57,6 +54,7 @@ async def test_register_user_rejects_existing_email_before_hashing() -> None:
             email="existing@example.com",
             full_name="Existing User",
             password="secure-password",
+            created_by=7,
         )
 
     hasher.assert_not_called()
@@ -76,6 +74,7 @@ async def test_register_user_rolls_back_database_uniqueness_race() -> None:
             email="race@example.com",
             full_name="Race User",
             password="secure-password",
+            created_by=7,
         )
 
     session.rollback.assert_awaited_once()

@@ -19,6 +19,7 @@ async def register_user(
     full_name: str,
     password: str,
     is_2fa_enabled: bool = False,
+    created_by: int,
 ) -> User:
     """Create a standard active user while keeping password storage one-way hashed."""
     # Store one canonical representation so login and uniqueness checks stay predictable.
@@ -39,10 +40,10 @@ async def register_user(
     )
     session.add(user)
     try:
-        # Flush obtains the integer primary key needed by the self-audit columns.
+        # Flush validates the insert before audit metadata and the transaction are committed.
         await session.flush()
-        user.created_by = user.id
-        user.updated_by = user.id
+        user.created_by = created_by
+        user.updated_by = created_by
         await session.commit()
         await session.refresh(user)
     except IntegrityError:
