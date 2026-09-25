@@ -57,11 +57,32 @@ LOGIN_RATE_LIMIT=5/15minutes
 REFRESH_RATE_LIMIT=20/minute
 LOGOUT_RATE_LIMIT=10/minute
 TASK_WRITE_RATE_LIMIT=30/minute
+OTP_VERIFY_RATE_LIMIT=5/5minutes
+OTP_RESEND_RATE_LIMIT=3/hour
 ```
 
 `GET /api/v1/health`, CORS preflight requests, and non-API paths are excluded. Rejected requests
 return HTTP `429` with a `Retry-After` header. The limiter uses the client address resolved by the
 ASGI server and does not read forwarded-IP headers directly.
+
+## Email two-factor authentication
+
+Two-factor authentication is opt-in per user through `users.is_2fa_enabled`. Configure the
+backend-only OTP and Resend values locally and in Render:
+
+```text
+RESEND_API_KEY=<resend-api-key>
+EMAIL_FROM=SPRY Assessment <no-reply@your-verified-domain.example>
+OTP_HASH_SECRET=<independent-random-secret-of-at-least-32-characters>
+OTP_EXPIRES_MINUTES=5
+OTP_MAX_ATTEMPTS=5
+OTP_RESEND_COOLDOWN_SECONDS=60
+OTP_MAX_RESENDS=3
+```
+
+The sender domain must be verified with Resend. Never expose these values to Angular or commit
+them to source control. JWTs are issued immediately for users without 2FA and only after a valid,
+single-use email challenge for users with 2FA.
 
 ## Quality checks
 
@@ -78,6 +99,8 @@ pytest
 | GET    | `/api/v1/health`                | Public         | API availability         |
 | GET    | `/api/v1/health/database`       | Public         | Database availability    |
 | POST   | `/api/v1/auth/login`            | Public         | Create authenticated session |
+| POST   | `/api/v1/auth/verify-otp`       | OTP challenge  | Complete two-factor sign-in |
+| POST   | `/api/v1/auth/resend-otp`       | OTP challenge  | Replace and resend email code |
 | POST   | `/api/v1/auth/refresh`          | Refresh token  | Refresh session tokens   |
 | POST   | `/api/v1/auth/logout`           | Bearer token   | Invalidate user tokens   |
 | GET    | `/api/v1/auth/me`               | Bearer token   | Get authenticated user   |

@@ -36,7 +36,14 @@ def mock_session() -> MagicMock:
 
 
 def user() -> User:
-    return User(id=7, email="vishal@example.com", full_name="Vishal", password_hash="hash")
+    return User(
+        id=7,
+        email="vishal@example.com",
+        full_name="Vishal",
+        password_hash="hash",
+        is_active=True,
+        is_deleted=False,
+    )
 
 
 def challenge(*, code: str = "123456", **changes: object) -> AuthOtpChallenge:
@@ -53,7 +60,9 @@ def challenge(*, code: str = "123456", **changes: object) -> AuthOtpChallenge:
         "verified_at": None,
     }
     values.update(changes)
-    return AuthOtpChallenge(**values)
+    stored = AuthOtpChallenge(**values)
+    stored.user = user()
+    return stored
 
 
 def test_hash_verification_is_challenge_bound_and_constant_result() -> None:

@@ -3,6 +3,7 @@
 import logging
 from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, patch
+from uuid import uuid4
 
 import pytest
 from fastapi.testclient import TestClient
@@ -152,6 +153,26 @@ def test_refresh_limit_is_applied_per_client() -> None:
 
     assert first.status_code == 401
     assert blocked.status_code == 429
+
+
+@pytest.mark.parametrize(
+    ("path", "setting_name"),
+    [
+        ("/api/v1/auth/verify-otp", "otp_verify_rate_limit"),
+        ("/api/v1/auth/resend-otp", "otp_resend_rate_limit"),
+    ],
+)
+def test_otp_endpoints_are_limited_by_challenge_and_client(path: str, setting_name: str) -> None:
+    client, _ = build_client(**{setting_name: "1/minute"})
+    payload = {"challenge_id": str(uuid4())}
+    if path.endswith("verify-otp"):
+        payload["otp"] = "invalid"
+
+    assert client.post(path, json=payload).status_code != 429
+    blocked = client.post(path, json=payload)
+
+    assert blocked.status_code == 429
+    assert "retry-after" in blocked.headers
 
 
 def test_logout_limit_is_applied_per_authenticated_user() -> None:

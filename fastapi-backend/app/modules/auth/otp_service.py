@@ -46,6 +46,7 @@ class OtpPolicy:
     max_resends: int = 3
 
     def __post_init__(self) -> None:
+        # A sufficiently long server secret makes an offline brute-force attack impractical.
         if len(self.hash_secret) < 32:
             raise ValueError("OTP hash secret must contain at least 32 characters.")
         if self.length < 6:
@@ -66,6 +67,7 @@ class IssuedOtp:
 
     challenge: AuthOtpChallenge
     code: str = field(repr=False)
+    recipient: str = field(repr=False)
     masked_email: str
 
 
@@ -89,6 +91,7 @@ def generate_otp(length: int = 6) -> str:
 
 def hash_otp(code: str, challenge_id: UUID, secret: str) -> str:
     """Bind an OTP to its challenge using a keyed SHA-256 digest."""
+    # Including the challenge ID means identical codes produce different stored hashes.
     value = f"{challenge_id}:{code}".encode()
     return hmac.new(secret.encode(), value, hashlib.sha256).hexdigest()
 
@@ -117,9 +120,11 @@ async def create_challenge(
 ) -> IssuedOtp:
     """Invalidate prior active challenges and persist one newly generated OTP hash."""
     issued_at = now or datetime.now(UTC)
+    # Serialize challenge creation per user to prevent two concurrent active codes.
     await _lock_user(session, user.id)
     await _invalidate_active_challenges(session, user.id, issued_at)
 
+    # The opaque UUID is safe to return to the client; the numeric database PK remains private.
     challenge_id = uuid4()
     code = generate_otp(policy.length)
     challenge = AuthOtpChallenge(
@@ -132,8 +137,14 @@ async def create_challenge(
         last_sent_at=issued_at,
     )
     session.add(challenge)
+    # Commit before sending email so verification can find the challenge immediately.
     await session.commit()
-    return IssuedOtp(challenge=challenge, code=code, masked_email=mask_email(user.email))
+    return IssuedOtp(
+        challenge=challenge,
+        code=code,
+        recipient=user.email,
+        masked_email=mask_email(user.email),
+    )
 
 
 async def verify_challenge(
@@ -146,25 +157,31 @@ async def verify_challenge(
 ) -> User:
     """Consume a valid challenge once and return the user authorized for token issuance."""
     checked_at = now or datetime.now(UTC)
+    # A row lock prevents concurrent requests from successfully consuming the same code twice.
     challenge = await session.scalar(
         select(AuthOtpChallenge)
         .options(selectinload(AuthOtpChallenge.user))
         .where(AuthOtpChallenge.challenge_id == challenge_id)
         .with_for_update()
     )
+    # Treat every unusable state as the same public verification failure.
     if (
         challenge is None
         or challenge.verified_at is not None
         or challenge.expires_at <= checked_at
         or challenge.attempt_count >= policy.max_attempts
+        or not challenge.user.is_active
+        or challenge.user.is_deleted
     ):
         raise OtpVerificationError
 
     if not verify_otp_hash(code, challenge.challenge_id, challenge.otp_hash, policy.hash_secret):
+        # Persist each failed attempt so the challenge locks after the configured maximum.
         challenge.attempt_count += 1
         await session.commit()
         raise OtpVerificationError
 
+    # verified_at is the durable single-use marker for this challenge.
     challenge.verified_at = checked_at
     await session.commit()
     return challenge.user
@@ -184,6 +201,7 @@ async def resend_challenge(
         .options(selectinload(AuthOtpChallenge.user))
         .where(AuthOtpChallenge.challenge_id == challenge_id)
     )
+    # Missing and ineligible challenges deliberately share the same safe public error.
     if previous is None:
         raise OtpResendError
 
@@ -202,11 +220,13 @@ async def resend_challenge(
     ):
         raise OtpResendError
 
+    # The persisted send time enforces cooldowns across processes and application restarts.
     cooldown_ends_at = previous.last_sent_at + timedelta(seconds=policy.resend_cooldown_seconds)
     if sent_at < cooldown_ends_at:
         retry_after = max(1, int((cooldown_ends_at - sent_at).total_seconds() + 0.999))
         raise OtpResendError(retry_after)
 
+    # Expire the old code before creating its replacement so only the latest email works.
     await _invalidate_active_challenges(session, previous.user_id, sent_at)
     new_challenge_id = uuid4()
     code = generate_otp(policy.length)
@@ -224,6 +244,7 @@ async def resend_challenge(
     return IssuedOtp(
         challenge=replacement,
         code=code,
+        recipient=previous.user.email,
         masked_email=mask_email(previous.user.email),
     )
 

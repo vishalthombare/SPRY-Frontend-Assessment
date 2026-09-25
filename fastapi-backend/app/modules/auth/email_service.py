@@ -19,7 +19,7 @@ class EmailDeliveryError(Exception):
 
 
 class OtpEmailSender(Protocol):
-    """Provider-neutral contract used by the authentication workflow."""
+    """Provider-neutral contract that keeps authentication independent from Resend."""
 
     async def send_otp(self, *, recipient: str, code: str, expires_minutes: int) -> None:
         """Deliver one OTP without returning or logging sensitive content."""
@@ -54,6 +54,7 @@ class ResendEmailService:
 
     async def send_otp(self, *, recipient: str, code: str, expires_minutes: int) -> None:
         """Send HTML and plain-text versions and convert provider failures to one safe error."""
+        # Both formats improve compatibility with rich and plain-text email clients.
         payload = {
             "from": self._from_address,
             "to": [recipient],
@@ -62,12 +63,14 @@ class ResendEmailService:
             "text": _render_template("otp_email.txt", code, expires_minutes),
         }
         try:
+            # Tests can inject a client; production creates and closes one for this request.
             if self._client is not None:
                 await self._post(self._client, payload)
             else:
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     await self._post(client, payload)
         except httpx.HTTPError:
+            # Never leak provider payloads, credentials, or infrastructure details to clients.
             raise EmailDeliveryError from None
 
     async def _post(self, client: httpx.AsyncClient, payload: dict[str, object]) -> None:
@@ -84,6 +87,7 @@ class ResendEmailService:
 
 def _render_template(template_name: str, code: str, expires_minutes: int) -> str:
     """Render controlled numeric values into packaged templates without a new dependency."""
+    # Template names are internal constants and are never accepted from an API request.
     template = (
         files("app.modules.auth").joinpath("templates", template_name).read_text(encoding="utf-8")
     )

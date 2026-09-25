@@ -28,13 +28,17 @@ class Settings(BaseSettings):
     refresh_rate_limit: str = "20/minute"
     logout_rate_limit: str = "10/minute"
     task_write_rate_limit: str = "30/minute"
+    # SecretStr prevents accidental disclosure when settings are printed or logged.
     resend_api_key: SecretStr = SecretStr("")
     email_from: str = ""
     otp_hash_secret: SecretStr = SecretStr("")
+    # Numeric constraints fail configuration validation before invalid limits reach services.
     otp_expires_minutes: int = Field(default=5, ge=1)
     otp_max_attempts: int = Field(default=5, ge=1)
     otp_resend_cooldown_seconds: int = Field(default=60, ge=1)
     otp_max_resends: int = Field(default=3, ge=1)
+    otp_verify_rate_limit: str = "5/5minutes"
+    otp_resend_rate_limit: str = "3/hour"
 
     # @computed_field exposes derived URLs like normal validated settings fields.
     @computed_field

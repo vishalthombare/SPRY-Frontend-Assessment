@@ -28,12 +28,14 @@ class AuthOtpChallenge(Base):
 
     # Keep the internal relational key numeric while exposing only the opaque UUID to clients.
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    # This UUID is the only challenge identifier returned through the public API.
     challenge_id: Mapped[UUID] = mapped_column(
         default=uuid4, unique=True, index=True, nullable=False
     )
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False
     )
+    # The plain six-digit OTP is never stored in the database.
     otp_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), index=True, nullable=False
@@ -45,6 +47,7 @@ class AuthOtpChallenge(Base):
         Integer, default=0, server_default="0", nullable=False
     )
     last_sent_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    # A non-null value marks the challenge as consumed and prevents replay.
     verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("now()"), nullable=False

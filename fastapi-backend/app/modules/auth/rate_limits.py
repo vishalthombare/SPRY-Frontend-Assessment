@@ -38,6 +38,24 @@ async def limit_refresh(request: Request) -> None:
     )
 
 
+async def limit_otp_verify(request: Request) -> None:
+    """Limit verification attempts by both client IP and opaque challenge ID."""
+    await _limit_otp_request(
+        request,
+        scope="auth-otp-verify",
+        configured_limit=request.app.state.settings.otp_verify_rate_limit,
+    )
+
+
+async def limit_otp_resend(request: Request) -> None:
+    """Limit replacement-code requests by both client IP and opaque challenge ID."""
+    await _limit_otp_request(
+        request,
+        scope="auth-otp-resend",
+        configured_limit=request.app.state.settings.otp_resend_rate_limit,
+    )
+
+
 async def limit_logout(request: Request, current_user: CurrentUser) -> None:
     """Limit logout attempts by the authenticated user's stable integer ID."""
     await _limit_authenticated(request, current_user, "auth-logout")
@@ -50,4 +68,22 @@ async def _limit_authenticated(request: Request, user: User, scope: str) -> None
         scope=scope,
         key=str(user.id),
         limit=RateLimit.parse(settings.logout_rate_limit),
+    )
+
+
+async def _limit_otp_request(request: Request, *, scope: str, configured_limit: str) -> None:
+    """Build a privacy-safe limit key from the requester and submitted challenge."""
+    try:
+        body = await request.json()
+    except ValueError:
+        body = {}
+    challenge_id = body.get("challenge_id", "") if isinstance(body, dict) else ""
+    # Combining both values stops one client from exhausting another client's allowance.
+    identity = f"{client_ip(request)}:{challenge_id}"
+    # Hash the compound identity so raw IP addresses are not retained in limiter storage.
+    await enforce_rate_limit(
+        request,
+        scope=scope,
+        key=opaque_key(identity),
+        limit=RateLimit.parse(configured_limit),
     )

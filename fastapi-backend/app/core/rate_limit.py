@@ -109,6 +109,8 @@ def validate_rate_limit_settings(settings: Settings) -> None:
         settings.refresh_rate_limit,
         settings.logout_rate_limit,
         settings.task_write_rate_limit,
+        settings.otp_verify_rate_limit,
+        settings.otp_resend_rate_limit,
     ):
         RateLimit.parse(value)
 
