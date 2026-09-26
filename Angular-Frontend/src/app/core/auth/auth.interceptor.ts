@@ -13,10 +13,17 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const refreshService = inject(TokenRefreshService);
   const router = inject(Router);
   const accessToken = session.accessToken;
-  // Login is public; all other calls receive the token when one exists.
-  const isLoginRequest = request.url.includes(API_ENDPOINTS.auth.login);
+  // Credential and OTP calls happen before authentication and must never trigger token refresh.
+  const publicAuthEndpoints = [
+    API_ENDPOINTS.auth.login,
+    API_ENDPOINTS.auth.verifyOtp,
+    API_ENDPOINTS.auth.resendOtp,
+  ];
+  const isPublicAuthRequest = publicAuthEndpoints.some((endpoint) =>
+    request.url.includes(endpoint),
+  );
   const authenticatedRequest =
-    accessToken && !isLoginRequest
+    accessToken && !isPublicAuthRequest
       ? request.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } })
       : request;
 
@@ -26,7 +33,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
       const canRefresh =
         error.status === 401 &&
         Boolean(session.refreshToken) &&
-        !request.url.includes(API_ENDPOINTS.auth.login) &&
+        !isPublicAuthRequest &&
         !request.url.includes(API_ENDPOINTS.auth.refresh);
       if (!canRefresh) return throwError(() => error);
 

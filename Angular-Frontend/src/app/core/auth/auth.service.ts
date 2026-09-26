@@ -3,7 +3,15 @@ import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { API_ENDPOINTS } from '../constants/api-endpoints.constants';
 import { AuthSessionService } from './auth-session.service';
-import { AuthUser, LoginRequest, LoginResponse } from './auth.model';
+import {
+  AuthUser,
+  LoginRequest,
+  LoginResult,
+  ResendOtpRequest,
+  ResendOtpResponse,
+  VerifyOtpRequest,
+  VerifyOtpResponse,
+} from './auth.model';
 
 /** Connects authentication UI flows to the FastAPI authentication endpoints. */
 @Injectable({ providedIn: 'root' })
@@ -14,12 +22,31 @@ export class AuthService {
   readonly isAuthenticated = this.session.isAuthenticated;
   readonly user = this.session.user;
 
-  /** Authenticate credentials and start the browser session from the returned token pair. */
-  login(credentials: LoginRequest): Observable<AuthUser> {
-    return this.api.post<LoginResponse, LoginRequest>(API_ENDPOINTS.auth.login, credentials).pipe(
-      tap(({ response }) => this.session.start(response, response.user)),
-      map(({ response }) => response.user),
+  /** Authenticate credentials and start a session only when no OTP challenge remains. */
+  login(credentials: LoginRequest): Observable<LoginResult> {
+    return this.api.post<LoginResult, LoginRequest>(API_ENDPOINTS.auth.login, credentials).pipe(
+      tap(({ response }) => {
+        if (!response.requires_otp) this.session.start(response, response.user);
+      }),
+      map(({ response }) => response),
     );
+  }
+
+  /** Exchange a valid email code for tokens and start the authenticated browser session. */
+  verifyOtp(request: VerifyOtpRequest): Observable<AuthUser> {
+    return this.api
+      .post<VerifyOtpResponse, VerifyOtpRequest>(API_ENDPOINTS.auth.verifyOtp, request)
+      .pipe(
+        tap(({ response }) => this.session.start(response, response.user)),
+        map(({ response }) => response.user),
+      );
+  }
+
+  /** Replace an eligible challenge and return metadata for the newly emailed code. */
+  resendOtp(request: ResendOtpRequest): Observable<ResendOtpResponse> {
+    return this.api
+      .post<ResendOtpResponse, ResendOtpRequest>(API_ENDPOINTS.auth.resendOtp, request)
+      .pipe(map(({ response }) => response));
   }
 
   /** Validates a restored browser session once before protected navigation. */

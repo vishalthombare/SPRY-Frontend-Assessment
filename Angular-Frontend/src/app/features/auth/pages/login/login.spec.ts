@@ -1,16 +1,28 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { Observable, Subject, throwError } from 'rxjs';
-import { AuthUser } from '../../../../core/auth/auth.model';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { AuthUser, LoginResult, ResendOtpResponse } from '../../../../core/auth/auth.model';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Login } from './login';
 
 class FakeAuthService {
-  response: Observable<AuthUser> = throwError(() => new HttpErrorResponse({ status: 500 }));
+  response: Observable<LoginResult> = throwError(() => new HttpErrorResponse({ status: 500 }));
+  verifyResponse: Observable<AuthUser> = throwError(() => new HttpErrorResponse({ status: 500 }));
+  resendResponse: Observable<ResendOtpResponse> = throwError(
+    () => new HttpErrorResponse({ status: 500 }),
+  );
 
-  login(): Observable<AuthUser> {
+  login(): Observable<LoginResult> {
     return this.response;
+  }
+
+  verifyOtp(): Observable<AuthUser> {
+    return this.verifyResponse;
+  }
+
+  resendOtp(): Observable<ResendOtpResponse> {
+    return this.resendResponse;
   }
 }
 
@@ -106,7 +118,7 @@ describe('Login', () => {
   });
 
   it('disables duplicate submissions and announces loading while login is pending', () => {
-    const pending = new Subject<AuthUser>();
+    const pending = new Subject<LoginResult>();
     auth.response = pending;
     component.form.setValue({ email: 'reviewer@example.com', password: 'password123' });
 
@@ -118,6 +130,73 @@ describe('Login', () => {
     expect(button.getAttribute('aria-busy')).toBe('true');
     expect(button.textContent).toContain('Signing in…');
     pending.complete();
+  });
+
+  it('moves a two-factor login into the accessible OTP verification step', () => {
+    auth.response = of({
+      requires_otp: true,
+      challenge_id: 'challenge-one',
+      masked_email: 'r*******@example.com',
+      expires_in_seconds: 300,
+    });
+    component.form.setValue({ email: 'reviewer@example.com', password: 'password123' });
+
+    component.submit();
+    fixture.detectChanges();
+
+    expect(component.form.controls.email.value).toBe('reviewer@example.com');
+    expect(component.form.controls.password.value).toBe('');
+    expect(fixture.nativeElement.querySelector('#otp')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('#otp').autocomplete).toBe('one-time-code');
+    expect(fixture.nativeElement.textContent).toContain('r*******@example.com');
+  });
+
+  it('validates the OTP and signs in with the challenge identifier', () => {
+    const user: AuthUser = {
+      id: 7,
+      email: 'reviewer@example.com',
+      full_name: 'Review User',
+      is_superuser: false,
+      created_date: '2026-09-26T00:00:00Z',
+    };
+    const verify = vi.spyOn(auth, 'verifyOtp');
+    auth.verifyResponse = of(user);
+    component.otpChallenge.set({
+      requires_otp: true,
+      challenge_id: 'challenge-one',
+      masked_email: 'r*******@example.com',
+      expires_in_seconds: 300,
+    });
+    component.otpForm.controls.otp.setValue('123456');
+
+    component.verifyOtp();
+
+    expect(verify).toHaveBeenCalledWith({ challenge_id: 'challenge-one', otp: '123456' });
+    expect(TestBed.inject(Router).navigateByUrl).toHaveBeenCalledWith('/assessment');
+  });
+
+  it('replaces the challenge after resending and clears the previous code', () => {
+    const resend = vi.spyOn(auth, 'resendOtp');
+    auth.resendResponse = of({
+      challenge_id: 'challenge-two',
+      masked_email: 'r*******@example.com',
+      expires_in_seconds: 300,
+      resend_cooldown_seconds: 60,
+    });
+    component.otpChallenge.set({
+      requires_otp: true,
+      challenge_id: 'challenge-one',
+      masked_email: 'r*******@example.com',
+      expires_in_seconds: 300,
+    });
+    component.otpForm.controls.otp.setValue('111111');
+
+    component.resendOtp();
+
+    expect(resend).toHaveBeenCalledWith({ challenge_id: 'challenge-one' });
+    expect(component.otpChallenge()?.challenge_id).toBe('challenge-two');
+    expect(component.otpForm.controls.otp.value).toBe('');
+    expect(component.otpNotice()).toBe('A new verification code was sent.');
   });
 
   it('uses secure accessible attributes for the repository link', () => {

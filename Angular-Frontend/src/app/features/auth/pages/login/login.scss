@@ -336,6 +336,47 @@ input.invalid {
   font-size: 0.82rem;
   font-weight: 650;
 }
+.form-notice {
+  margin: 0.9rem 0 0;
+  color: #466d1d;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+.otp-input {
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 750;
+  letter-spacing: 0.55rem;
+  font-variant-numeric: tabular-nums;
+}
+.login-panel .otp-help {
+  color: $muted;
+}
+.otp-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.9rem;
+}
+.otp-actions button {
+  min-height: 2.75rem;
+  padding: 0.45rem;
+  border: 0;
+  color: $purple;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.otp-actions button:hover,
+.otp-actions button:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+.otp-actions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
 .sign-in-button {
   margin-top: clamp(0.85rem, 1.6vh, 1.35rem);
   height: 3.45rem;

@@ -2,6 +2,8 @@
 export const API_ENDPOINTS = {
   auth: {
     login: '/auth/login',
+    verifyOtp: '/auth/verify-otp',
+    resendOtp: '/auth/resend-otp',
     refresh: '/auth/refresh',
     logout: '/auth/logout',
     me: '/auth/me',
